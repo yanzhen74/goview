@@ -51,13 +51,4 @@ func TestMain(t *testing.T) {
 	driver.Quit()
 	//os.Exit(r)
 
-	// opts := []selenium.ServiceOption{}
-
-	// service, err := selenium.NewChromeDriverService(seleniumPath, port, opts...)
-	// if nil != err {
-	// 	fmt.Println("start a chromdriver service failed", err.Error())
-	// 	return
-	// }
-
-	// defer service.Stop()
 }
