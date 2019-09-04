@@ -3,6 +3,7 @@
             console.log("time out..." + timeOut);
 
             document.getElementById("p1").innerHTML="dkdkdk" + timeOut;
-            timeOutAlert();
+            if (timeOut < 1000)
+                timeOutAlert();
         },10);
     } 
