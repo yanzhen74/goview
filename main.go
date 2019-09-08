@@ -12,10 +12,10 @@ func main() {
 	app.Logger().SetLevel("debug")
 	app.Use(recover.New())
 	app.Use(logger.New())
-	app.HandleDir("/template", "./template")
-	app.RegisterView(iris.HTML("./", ".html"))
+	app.HandleDir("/public", "./public")
+	app.RegisterView(iris.HTML("./views", ".html"))
 	app.Get("/", func(ctx iris.Context) {
-		ctx.View("/template/quick_table.html")
+		ctx.View("/index.html")
 	})
 
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))

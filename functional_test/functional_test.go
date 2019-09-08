@@ -43,7 +43,9 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 			So(strings.Contains(title, "goview"), ShouldBeTrue)
 		})
 
-		Convey("She is invited to select a data table from a list to view", func() {})
+		Convey("She is invited to select a data table from a tree to view", func() {
+			t.Error("not implement")
+		})
 
 		Convey("She selects the gcyctd table", func() {})
 
@@ -52,7 +54,7 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 		Convey("Just this time, gcyctd data is sent to the table, she sees the data varing in 2 fps", func() {})
 
 		Convey(`Edith wonders whether the site will remember her table.Then she sees that the site has generated
-					a unique URL for her -- there is some explanatory text to that effect. `, func() {})
+			a unique URL for her -- there is some explanatory text to that effect. `, func() {})
 
 		Convey("She visits that URL - her table is still there", func() {})
 
@@ -60,5 +62,4 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 	})
 
 	browser.Quit()
-
 }
