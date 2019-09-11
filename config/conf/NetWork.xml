@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+    <NetWork NetWorkSeqNum="1" NetWorkName="YHYHRTM" NetWorkIP="10.211.55.2:9092" NetWorkkPort="STANDBY_RT" NetWorkSpecification="实时遥测" NetWorkProtocal="kafka" DataType="data"/>
+</ROOT>

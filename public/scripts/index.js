@@ -6,64 +6,6 @@
     ,util = layui.util
     ,index = 100;
     
-    //数据源
-    var data1 = [{
-      title: 'gcyc'
-      ,id: 1
-      ,spread: true
-      ,children: [{
-        title: 'gcyctd'
-        ,id: 3
-        ,spread: true
-        //,href: 'https://www.layui.com/doc/'
-        ,href: "javascript:;" 
-        ,class: "site_demo_active"
-        ,data_type: "tabAdd"
-        ,data_title: "pk25"
-        ,data_id: "1"
-        ,data_url: "https://www.layui.com/doc/"
-        }],
-      title: 'sgyc'
-      ,id: 2
-      ,spread: true
-      ,children: [{
-        title: 'pk25'
-        ,id: 5
-        ,spread: true
-        ,href: "javascript:;" 
-        ,class: "site_demo_active"
-        ,data_type: "tabAdd"
-        ,data_title: "pk25"
-        ,data_id: "2"
-        ,data_url: "https://www.layui.com/doc/"
-        ,children: [{
-          title: '三级2_1_1'
-          ,id: 11
-            ,href: "javascript:;" 
-            ,class: "site_demo_active"
-            ,data_type: "tabAdd"
-            ,data_title: "pk25"
-            ,data_id: "3"
-            ,data_url: "https://www.layui.com/doc/"
-        },{
-          title: '三级2_1_2'
-          ,id: 12
-        }]
-      },{
-        title: '二级2_2'
-        ,id: 6
-        ,checked: true
-        ,children: [{
-          title: '三级2_2_1'
-          ,id: 13
-        },{
-          title: '三级2_2_2'
-          ,id: 14
-          ,disabled: true
-        }]
-      }]
-    }];
-
     
     tree.render({
       elem: '#test2'

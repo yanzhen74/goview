@@ -24,32 +24,31 @@
         <div class="layui-side-scroll">
             <!-- 左侧垂直导航区域-->
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <li class="layui-nav-item">
-                    <a class="" href="javascript:;">银河一号</a>
+                 {{range .menu.Items}}
+                 <li class="layui-nav-item">
+                    <a class="" href="javascript:;">{{ .Name }}</a>
                     <dl class="layui-nav-child">
                         <div id="test2"></div>
-                        <dd>
-                            <a href="javascript:;" data-id="1" data-title="管理员列表" data-url="index.php?&a=adminList"
-                               class="site_demo_active" data-type="tabAdd">管理员列表</a></dd>
-                        <dd><a href="javascript:;" data-id="2" data-title="管理员日志" data-url="index.php?&a=adminLogList"
-                               class="site_demo_active" data-type="tabAdd">管理员日志</a></dd>
                     </dl>
                 </li>
+                    <!-- child name is {{.Name}} -->
+                {{end}}
                 <li class="layui-nav-item">
-                    <a href="javascript:;">交易管理</a>
+                    <a href="javascript:;">天梭</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:;" data-id="" data-id="3" data-title="存款列表"
-                               　data-url="index.php?&a=adminList" class="site-demo-active" data-type="tabAdd">存款列表</a>
+                        <dd><a href="javascript:;" data-id="3" data-title="存款列表"
+                               　data-url="index.php?&a=adminList" class="site-demo-active" data-type="tabAdd">梭子鱼</a>
                         </dd>
-                        <dd><a href="javascript:;">代付列表</a></dd>
+                        <dd><a href="javascript:;">好吃</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="javascript:;">系统管理</a>
+                    <a href="javascript:;">璇玑</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">支付API设置</a></dd>
+                        <dd><a href="javascript:;">API设置</a></dd>
                         <dd><a href="javascript:;">公告设置</a></dd>
                         <dd><a href="javascript:;">控制台</a></dd>
+                    </dl>
                 </li>
             </ul>
         </div>
@@ -68,7 +67,64 @@
 </div>
 <script src="/public/layui/layui.js"></script>
 <script>
-<!--这里是放置js代码区域-->
+    //数据源
+    var data1 = [{
+      title: 'gcyc'
+      ,id: 1
+      ,spread: true
+      ,children: [{
+        title: 'gcyctd'
+        ,id: 3
+        ,spread: true
+        //,href: 'https://www.layui.com/doc/'
+        ,href: "javascript:;" 
+        ,class: "site_demo_active"
+        ,data_type: "tabAdd"
+        ,data_title: "pk25"
+        ,data_id: "1"
+        ,data_url: "https://www.layui.com/doc/"
+        }],
+      title: 'sgyc'
+      ,id: 2
+      ,spread: true
+      ,children: [{
+        title: 'pk25'
+        ,id: 5
+        ,spread: true
+        ,href: "javascript:;" 
+        ,class: "site_demo_active"
+        ,data_type: "tabAdd"
+        ,data_title: "pk25"
+        ,data_id: "2"
+        ,data_url: "https://www.layui.com/doc/"
+        ,children: [{
+          title: '三级2_1_1'
+          ,id: 11
+            ,href: "javascript:;" 
+            ,class: "site_demo_active"
+            ,data_type: "tabAdd"
+            ,data_title: "pk25"
+            ,data_id: "3"
+            ,data_url: "https://www.layui.com/doc/"
+        },{
+          title: '三级2_1_2'
+          ,id: 12
+        }]
+      },{
+        title: '二级2_2'
+        ,id: 6
+        ,checked: true
+        ,children: [{
+          title: '三级2_2_1'
+          ,id: 13
+        },{
+          title: '三级2_2_2'
+          ,id: 14
+          ,disabled: true
+        }]
+      }]
+    }];
+
 </script>
 <script type="text/javascript" src="/public/scripts/index.js"></script>
 </body>

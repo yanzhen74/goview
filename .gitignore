@@ -17,3 +17,4 @@ __debug_bin
 
 # db
 *.sqlite3
+.DS_Store

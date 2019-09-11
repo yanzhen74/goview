@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Paras MissionID="WYG" DataType="RTM" PageType="result">
+    <Para id="1" Parakey="WABB1006" name="未央宫复用:1" type="hex" process_type="raw" process_unit="byte" process_start="0" process_end="1" SubAddressName="PK-CEH2" PayloadName="SGYC" Visible="true">
+        <ParaRange RangeSeq="1" ParaRangeSpecification="一路" alarm_min="01" alarm_min_equal="true" alarm_max="01" alarm_max_equal="true" />
+        <ParaRange RangeSeq="2" ParaRangeSpecification="二路" alarm_min="02" alarm_min_equal="true" alarm_max="02" alarm_max_equal="true" />
+        <ParaRange RangeSeq="3" ParaRangeSpecification="二路" alarm_min="03" alarm_min_equal="true" alarm_max="03" alarm_max_equal="true" />
+        <ParaRange RangeSeq="4" ParaRangeSpecification="二路" alarm_min="04" alarm_min_equal="true" alarm_max="04" alarm_max_equal="true" />
+    </Para>
+    <Para id="2" Parakey="WABB1007" name="状态一" type="hex" process_type="raw" process_unit="byte" process_start="0" process_end="3" SubAddressName="PK-CEH2" PayloadName="SGYC" Visible="true">
+        <ParaRange RangeSeq="1" ParaRangeSpecification="状态ok" alarm_min="0001" alarm_min_equal="true" alarm_max="0001" alarm_max_equal="true"/>
+        <ParaRange RangeSeq="2" ParaRangeSpecification="状态fail" alarm_min="0002" alarm_min_equal="true" alarm_max="0002" alarm_max_equal="true"/>
+    </Para>
+    <Para id="3" Parakey="WCED11:d15" name="心跳" type="bit" process_type="raw" process_unit="bit" process_start="0" process_end="0" SubAddressName="PK-CEH2" PayloadName="SGYC" Visible="true">
+        <ParaRange RangeSeq="1" ParaRangeSpecification="心跳" alarm_min="0" alarm_min_equal="true" alarm_max="1" alarm_max_equal="true" />
+    </Para>
+    <Para id="4" Parakey="fill-220" name="填充" type="" process_type="raw"  process_unit="" process_start="" proess_end="" SubAddressName="PK-CEH2" PayloadName="SGYC" Visible="true">
+        <ParaRange RangeSeq="" ParaRangeSpecification="" alarm_min="" alarm_min_equal="true" alarm_max="" alarm_max_equal="true"/>
+    </Para>
+    <Para id="5" Parakey="VHH100" name="电压1" type="float" unit="V" process_type="result" SubAddressName="PK-CEH2" PayloadName="SGYC" Visible="true">
+        <ParaRange RangeSeq="0" ParaRangeSpecification="断电" alarm_min="0.0" alarm_min_equal="False" alarm_max="3.5" alarm_max_equal="False"/>
+        <ParaRange RangeSeq="1" ParaRangeSpecification="加电" alarm_min="3.5" alarm_min_equal="False" alarm_max="9.5" alarm_max_equal="False"/>
+    </Para>
+</Paras>
