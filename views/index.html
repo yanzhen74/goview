@@ -24,14 +24,13 @@
         <div class="layui-side-scroll">
             <!-- 左侧垂直导航区域-->
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                 {{range .menu.Items}}
+                 {{range .menu.Branches}}
                  <li class="layui-nav-item">
-                    <a class="" href="javascript:;">{{ .Name }}</a>
+                    <a class="" href="javascript:;">{{ .Curname | }}</a>
                     <dl class="layui-nav-child">
                         <div id="test2"></div>
                     </dl>
                 </li>
-                    <!-- child name is {{.Name}} -->
                 {{end}}
                 <li class="layui-nav-item">
                     <a href="javascript:;">天梭</a>
@@ -40,14 +39,6 @@
                                　data-url="index.php?&a=adminList" class="site-demo-active" data-type="tabAdd">梭子鱼</a>
                         </dd>
                         <dd><a href="javascript:;">好吃</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">璇玑</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">API设置</a></dd>
-                        <dd><a href="javascript:;">公告设置</a></dd>
-                        <dd><a href="javascript:;">控制台</a></dd>
                     </dl>
                 </li>
             </ul>
@@ -67,63 +58,84 @@
 </div>
 <script src="/public/layui/layui.js"></script>
 <script>
-    //数据源
+{{ define "loop"}}
+ {{range .Branches}}
+title: '{{ .Curname }}'
+,id: {{ .Id }}
+,spread: true 
+{{ if .Isleaf }}
+        ,href: "javascript:;" 
+        ,class: "site_demo_active"
+        ,data_type: "tabAdd"
+        ,data_title: "{{ .Curname}}"
+        ,data_id: "{{.Id}}"
+        ,data_url: "https://www.layui.com/doc/"
+ {{ else }}
+,children: [{
+    {{ template "loop" . }}
+}],
+{{ end }}
+{{end}}
+{{end}}
     var data1 = [{
-      title: 'gcyc'
-      ,id: 1
-      ,spread: true
-      ,children: [{
-        title: 'gcyctd'
-        ,id: 3
-        ,spread: true
-        //,href: 'https://www.layui.com/doc/'
-        ,href: "javascript:;" 
-        ,class: "site_demo_active"
-        ,data_type: "tabAdd"
-        ,data_title: "pk25"
-        ,data_id: "1"
-        ,data_url: "https://www.layui.com/doc/"
-        }],
-      title: 'sgyc'
-      ,id: 2
-      ,spread: true
-      ,children: [{
-        title: 'pk25'
-        ,id: 5
-        ,spread: true
-        ,href: "javascript:;" 
-        ,class: "site_demo_active"
-        ,data_type: "tabAdd"
-        ,data_title: "pk25"
-        ,data_id: "2"
-        ,data_url: "https://www.layui.com/doc/"
-        ,children: [{
-          title: '三级2_1_1'
-          ,id: 11
-            ,href: "javascript:;" 
-            ,class: "site_demo_active"
-            ,data_type: "tabAdd"
-            ,data_title: "pk25"
-            ,data_id: "3"
-            ,data_url: "https://www.layui.com/doc/"
-        },{
-          title: '三级2_1_2'
-          ,id: 12
-        }]
-      },{
-        title: '二级2_2'
-        ,id: 6
-        ,checked: true
-        ,children: [{
-          title: '三级2_2_1'
-          ,id: 13
-        },{
-          title: '三级2_2_2'
-          ,id: 14
-          ,disabled: true
-        }]
-      }]
+           {{ template "loop" .menu}} 
     }];
+    // var data1 = [{
+    //   title: 'gcyc'
+    //   ,id: 1
+    //   ,spread: true
+    //   ,children: [{
+    //     title: 'gcyctd'
+    //     ,id: 3
+    //     ,spread: true
+    //     //,href: 'https://www.layui.com/doc/'
+    //     ,href: "javascript:;" 
+    //     ,class: "site_demo_active"
+    //     ,data_type: "tabAdd"
+    //     ,data_title: "pk25"
+    //     ,data_id: "1"
+    //     ,data_url: "https://www.layui.com/doc/"
+    //     }],
+    //   title: 'sgyc'
+    //   ,id: 2
+    //   ,spread: true
+    //   ,children: [{
+    //     title: 'pk25'
+    //     ,id: 5
+    //     ,spread: true
+    //     ,href: "javascript:;" 
+    //     ,class: "site_demo_active"
+    //     ,data_type: "tabAdd"
+    //     ,data_title: "pk25"
+    //     ,data_id: "2"
+    //     ,data_url: "https://www.layui.com/doc/"
+    //     ,children: [{
+    //       title: '三级2_1_1'
+    //       ,id: 11
+    //         ,href: "javascript:;" 
+    //         ,class: "site_demo_active"
+    //         ,data_type: "tabAdd"
+    //         ,data_title: "pk25"
+    //         ,data_id: "3"
+    //         ,data_url: "https://www.layui.com/doc/"
+    //     },{
+    //       title: '三级2_1_2'
+    //       ,id: 12
+    //     }]
+    //   },{
+    //     title: '二级2_2'
+    //     ,id: 6
+    //     ,checked: true
+    //     ,children: [{
+    //       title: '三级2_2_1'
+    //       ,id: 13
+    //     },{
+    //       title: '三级2_2_2'
+    //       ,id: 14
+    //       ,disabled: true
+    //     }]
+    //   }]
+    // }];
 
 </script>
 <script type="text/javascript" src="/public/scripts/index.js"></script>

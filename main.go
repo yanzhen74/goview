@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/kataras/iris"
+	"github.com/yanzhen74/goview/src/model"
 
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
@@ -22,7 +25,9 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 	app.HandleDir("/public", "./public")
-	app.RegisterView(iris.HTML("./views", ".html"))
+	tmpl := iris.HTML("./views", ".html")
+	tmpl.Reload(true)
+	app.RegisterView(tmpl)
 
 	// template
 	// t := template.New("ex")
@@ -39,10 +44,15 @@ func main() {
 	// m := menu{UserName: "oliver",
 	// 	Items: []ShipPackage{ShipPackage{Name: "YHYH", Children: []ShipPackage{ShipPackage{Name: "RTM", Children: nil}}}}}
 	// t.Execute(os.Stdout, m)
+	pages, err := model.Init_pages("config/resource/menu")
+
+	if err != nil {
+		fmt.Printf("error is %v", err)
+		return
+	}
 
 	app.Get("/", func(ctx iris.Context) {
-		ctx.ViewData("menu", Menu{UserName: "oliver",
-			Items: []ShipPackage{ShipPackage{Name: "YHYH", Children: []ShipPackage{ShipPackage{Name: "RTM", Children: nil}}}}})
+		ctx.ViewData("menu", pages)
 		ctx.View("/index.html")
 	})
 
