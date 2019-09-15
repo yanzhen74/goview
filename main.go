@@ -25,7 +25,10 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 	app.HandleDir("/public", "./public")
+	app.HandleDir("/config", "./config")
+	// 模板引擎采用html/template
 	tmpl := iris.HTML("./views", ".html")
+	// 在每个请求上 重新加载模板（开发模式）
 	tmpl.Reload(true)
 	app.RegisterView(tmpl)
 
@@ -51,10 +54,12 @@ func main() {
 		return
 	}
 
+	app.Get("/tab", func(ctx iris.Context) {
+		ctx.View("/tab.html")
+	})
 	app.Get("/", func(ctx iris.Context) {
 		ctx.ViewData("menu", pages)
 		ctx.View("/index.html")
 	})
-
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
 }

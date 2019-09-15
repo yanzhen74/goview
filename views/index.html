@@ -1,142 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>goview</title>
-    <link rel="stylesheet" href="/public/layui/css/layui.css">
+    {{ template "header" }}
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">POAC综合监显</div>
-        <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item">
-                欢迎光临
-            </li>
-            <li class="layui-nav-item"><a href="">安全退出</a></li>
-        </ul>
+        {{ template "content-header"}}
     </div>
 
     <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧垂直导航区域-->
-            <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                 {{range .menu.Branches}}
-                 <li class="layui-nav-item">
-                    <a class="" href="javascript:;">{{ .Curname | }}</a>
-                    <dl class="layui-nav-child">
-                        <div id="test2"></div>
-                    </dl>
-                </li>
-                {{end}}
-                <li class="layui-nav-item">
-                    <a href="javascript:;">天梭</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="javascript:;" data-id="3" data-title="存款列表"
-                               　data-url="index.php?&a=adminList" class="site-demo-active" data-type="tabAdd">梭子鱼</a>
-                        </dd>
-                        <dd><a href="javascript:;">好吃</a></dd>
-                    </dl>
-                </li>
-            </ul>
-        </div>
+        {{ template "content-left" . }}
     </div>
 
     <!--tab标签-->
     <div class="layui-tab" lay-filter="demo" lay-allowclose="true" style="margin-left: 200px;">
-        <ul class="layui-tab-title"></ul>
-        <div class="layui-tab-content"></div>
+        {{ template "content-tab" .}}
     </div>
 
 <div class="layui-footer" style="text-align:center;">
     <!-- 底部固定区域 -->
-    POAC 有效载荷运控中心
+    {{ template "footer" .}}
 </div>
 </div>
 <script src="/public/layui/layui.js"></script>
 <script>
-{{ define "loop"}}
- {{range .Branches}}
-title: '{{ .Curname }}'
-,id: {{ .Id }}
-,spread: true 
-{{ if .Isleaf }}
-        ,href: "javascript:;" 
-        ,class: "site_demo_active"
-        ,data_type: "tabAdd"
-        ,data_title: "{{ .Curname}}"
-        ,data_id: "{{.Id}}"
-        ,data_url: "https://www.layui.com/doc/"
- {{ else }}
-,children: [{
-    {{ template "loop" . }}
-}],
-{{ end }}
-{{end}}
-{{end}}
-    var data1 = [{
-           {{ template "loop" .menu}} 
-    }];
-    // var data1 = [{
-    //   title: 'gcyc'
-    //   ,id: 1
-    //   ,spread: true
-    //   ,children: [{
-    //     title: 'gcyctd'
-    //     ,id: 3
-    //     ,spread: true
-    //     //,href: 'https://www.layui.com/doc/'
-    //     ,href: "javascript:;" 
-    //     ,class: "site_demo_active"
-    //     ,data_type: "tabAdd"
-    //     ,data_title: "pk25"
-    //     ,data_id: "1"
-    //     ,data_url: "https://www.layui.com/doc/"
-    //     }],
-    //   title: 'sgyc'
-    //   ,id: 2
-    //   ,spread: true
-    //   ,children: [{
-    //     title: 'pk25'
-    //     ,id: 5
-    //     ,spread: true
-    //     ,href: "javascript:;" 
-    //     ,class: "site_demo_active"
-    //     ,data_type: "tabAdd"
-    //     ,data_title: "pk25"
-    //     ,data_id: "2"
-    //     ,data_url: "https://www.layui.com/doc/"
-    //     ,children: [{
-    //       title: '三级2_1_1'
-    //       ,id: 11
-    //         ,href: "javascript:;" 
-    //         ,class: "site_demo_active"
-    //         ,data_type: "tabAdd"
-    //         ,data_title: "pk25"
-    //         ,data_id: "3"
-    //         ,data_url: "https://www.layui.com/doc/"
-    //     },{
-    //       title: '三级2_1_2'
-    //       ,id: 12
-    //     }]
-    //   },{
-    //     title: '二级2_2'
-    //     ,id: 6
-    //     ,checked: true
-    //     ,children: [{
-    //       title: '三级2_2_1'
-    //       ,id: 13
-    //     },{
-    //       title: '三级2_2_2'
-    //       ,id: 14
-    //       ,disabled: true
-    //     }]
-    //   }]
-    // }];
-
+    {{ template "view_tree_data" .menu }}
 </script>
 <script type="text/javascript" src="/public/scripts/index.js"></script>
 </body>

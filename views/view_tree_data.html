@@ -1,0 +1,44 @@
+{{ define "loop"}}
+    {{range .Branches}}
+        {
+        title: '{{ .Curname }}'
+        ,id: {{ .Id }}
+        ,spread: true 
+        {{ if .Isleaf }}
+            ,href: "javascript:;" 
+            ,class: "site_demo_active"
+            ,data_type: "tabAdd"
+            ,data_title: "{{ .Curname}}"
+            ,data_id: "{{.Id}}"
+            // ,data_url: "https://www.layui.com/doc/"
+            ,data_url: "/tab?page={{.Curdir}}"
+        {{ else }}
+            ,children: [
+                {{ template "loop" . }}
+            ],
+        {{ end }}
+        },
+    {{end}}
+{{end}}
+
+{{ define "view_tree_data" }}
+    var data1 = [
+           {{ template "loop" .}} 
+    ];
+{{ end }}
+    // var data1 = [{
+    //   title: 'gcyc'
+    //   ,id: 1
+    //   ,spread: true
+    //   ,children: [{
+    //     title: 'gcyctd'
+    //     ,id: 3
+    //     ,spread: true
+    //     //,href: 'https://www.layui.com/doc/'
+    //     ,href: "javascript:;" 
+    //     ,class: "site_demo_active"
+    //     ,data_type: "tabAdd"
+    //     ,data_title: "pk25"
+    //     ,data_id: "1"
+    //     ,data_url: "https://www.layui.com/doc/"
+    //     }],
