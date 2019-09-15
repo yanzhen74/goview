@@ -54,9 +54,19 @@ func main() {
 		return
 	}
 
-	app.Get("/tab", func(ctx iris.Context) {
+	app.Get("/tab/{page:path}", func(ctx iris.Context) {
+		page := ctx.Params().Get("page")
+		fmt.Println("open:", page)
+		paras, err := model.Read_view_page(page)
+		if err != nil {
+			fmt.Printf("error is %v", err)
+			return
+		}
+		fmt.Println("paras: ", paras)
+		ctx.ViewData("paras", paras)
 		ctx.View("/tab.html")
 	})
+
 	app.Get("/", func(ctx iris.Context) {
 		ctx.ViewData("menu", pages)
 		ctx.View("/index.html")

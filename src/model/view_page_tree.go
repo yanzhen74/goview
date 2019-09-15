@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
 )
 
 type View_page_tree struct {
@@ -19,7 +18,7 @@ type View_page_tree struct {
 var pid = 0
 
 func Init_pages(dir string) (data View_page_tree, err error) {
-	dir, _ = filepath.Abs(dir)
+	//dir, _ = filepath.Abs(dir)
 	//判断文件或目录是否存在
 	file, err := os.Stat(dir)
 	if err != nil {

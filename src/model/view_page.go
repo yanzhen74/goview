@@ -18,6 +18,7 @@ type Para_Page struct {
 	ID             string      `xml:"id,attr"`
 	ParaKey        string      `xml:"Parakey,attr"`
 	Type           string      `xml:"type,attr"`
+	Unit           string      `xml:"unit,attr"`
 	Process_type   string      `xml:"process_type,attr"`
 	Process_unit   string      `xml:"process_unit,attr"`
 	Process_start  string      `xml:"process_start,attr"`
