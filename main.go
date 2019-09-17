@@ -32,21 +32,9 @@ func main() {
 	tmpl.Reload(true)
 	app.RegisterView(tmpl)
 
-	// template
-	// t := template.New("ex")
-	// t, _ = t.Parse(`hello {{.UserName}}!
-	// 	{{range .Items}}
-	// 		{{with .Children}}
-	// 		{{range .}}
-	// 			child name is {{.Name}}
-	// 		{{end}}
-	// 		{{end}}
-	// 	{{end}}
-	// 	`)
-	// t, _ = t.ParseFiles("views/index.html")
-	// m := menu{UserName: "oliver",
-	// 	Items: []ShipPackage{ShipPackage{Name: "YHYH", Children: []ShipPackage{ShipPackage{Name: "RTM", Children: nil}}}}}
-	// t.Execute(os.Stdout, m)
+	// websocket
+	setupWebsocket(app)
+
 	pages, err := model.Init_pages("config/resource/menu")
 
 	if err != nil {

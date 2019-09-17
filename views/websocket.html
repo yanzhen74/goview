@@ -1,0 +1,48 @@
+{{ define "websocket"}}
+<!-- the message's input -->
+<input id="input" type="text" />
+
+<!-- when clicked then an iris websocket event will be sent to the server
+at this example we registered the 'chat' -->
+<button onclick="send()">Send</button>
+
+<!-- the messages will be shown here -->
+<pre id="output"></pre>
+<!-- import the iris client-side library for browser -->
+
+<script>
+    var scheme=document.location.protocol=="https:"?"wss":"ws";
+    var port=document.location.port?(":"+document.location.port):"";
+    // see app.Get("/echo", ws.Handler()) on main.go
+    var wsURL = scheme + "://" + document.location.hostname  + port + "/echo";
+
+    var input=document.getElementById("input");
+    var output=document.getElementById("output");
+
+    // Ws comes from the auto-served '/iris-ws.js'
+    var socket = new WebSocket(wsURL)
+    socket.onopen = (function(){
+        output.innerHTML += "Status: Connected\n";
+    });
+
+    socket.onclose = (function(){
+        appendMessage("<div><center><h3>Disconnected</h3></center></div>");
+    });
+
+    // read events from the server
+    socket.onmessage = (function(msg){
+        addMessage("<div>" + msg.data + "</div>");
+    });
+
+    function send() {
+        addMessage("<div style='color: red'> me: " + input.value + "</div>"); // write ourselves
+        socket.send(input.value); // send chat event data to the websocket server
+        input.value  = ""; // clear the input
+    }
+
+    function addMessage(msg) {
+        output.insertAdjacentHTML('afterbegin', msg);
+
+    }
+</script>
+{{end}}

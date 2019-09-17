@@ -4,6 +4,7 @@
             <link rel="stylesheet" href="/public/layui/css/layui.css" />
     </head>
     <body>
+        {{ template "websocket"}}
         <table class="layui-table" lay-size="sm">
             <colgroup>
                 <col width="150">
@@ -51,9 +52,9 @@
 
     document.getElementById("1WABB1006").cells[3].innerHTML = "0xA0F0"+timeOut;
     document.getElementById("1WABB1006").cells[4].innerHTML = "535"+timeOut;
-            if (timeOut < 1000)
+            if (timeOut < 100)
                 timeOutAlert();
-        },10);
+        },100);
     }     
 </script>
 </html>
