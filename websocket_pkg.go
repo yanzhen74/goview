@@ -7,6 +7,41 @@ import (
 	"github.com/kataras/iris/websocket"
 )
 
+const namespace = "default"
+
+// if namespace is empty then simply websocket.Events{...} can be used instead.
+var serverEvents = websocket.Namespaces{
+	namespace: websocket.Events{
+		websocket.OnNamespaceConnected: func(nsConn *websocket.NSConn, msg websocket.Message) error {
+			// with `websocket.GetContext` you can retrieve the Iris' `Context`.
+			ctx := websocket.GetContext(nsConn.Conn)
+
+			log.Printf("[%s] connected to namespace [%s] with IP [%s]",
+				nsConn, msg.Namespace,
+				ctx.RemoteAddr())
+			return nil
+		},
+		websocket.OnNamespaceDisconnect: func(nsConn *websocket.NSConn, msg websocket.Message) error {
+			log.Printf("[%s] disconnected from namespace [%s]", nsConn, msg.Namespace)
+			return nil
+		},
+		"chat": func(nsConn *websocket.NSConn, msg websocket.Message) error {
+			// room.String() returns -> NSConn.String() returns -> Conn.String() returns -> Conn.ID()
+			log.Printf("[%s] sent: %s", nsConn, string(msg.Body))
+			log.Printf("Server got: %s from [%s]", msg.Body, nsConn.Conn.ID())
+
+			nsConn.Conn.Server().Broadcast(nsConn, msg)
+			go publishPkg(nsConn, msg)
+
+			// Write message back to the client message owner with:
+			// nsConn.Emit("chat", msg)
+			// Write message to all except this client with:
+			nsConn.Conn.Server().Broadcast(nsConn, msg)
+			return nil
+		},
+	},
+}
+
 func setupWebsocket(app *iris.Application) {
 	// create our websocket server
 	// Almost all features of neffos are disabled because no custom message can pass
@@ -17,15 +52,8 @@ func setupWebsocket(app *iris.Application) {
 	// When `Events{...}` is used instead of `Namespaces{ "namespaceName": Events{...}}`
 	// then the namespace is empty "".
 	ws := websocket.New(
-		websocket.DefaultGorillaUpgrader, websocket.Events{
-			websocket.OnNativeMessage: func(nsConn *websocket.NSConn,
-				msg websocket.Message) error {
-				log.Printf("Server got: %s from [%s]", msg.Body, nsConn.Conn.ID())
-
-				nsConn.Conn.Server().Broadcast(nsConn, msg)
-				return nil
-			},
-		})
+		websocket.DefaultGorillaUpgrader,
+		serverEvents)
 	ws.OnConnect = func(c *websocket.Conn) error {
 		log.Printf("[%s] Connected to server!", c.ID())
 		return nil

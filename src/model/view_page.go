@@ -8,7 +8,8 @@ import (
 )
 
 type Paras struct {
-	XMLName  xml.Name    `xml:"Paras"`
+	XMLName  xml.Name `xml:"Paras"`
+	File     string
 	ParaList []Para_Page `xml:"Para"`
 }
 
@@ -44,6 +45,7 @@ func Read_view_page(filename string) (*Paras, error) {
 	}
 
 	v := Paras{}
+	v.File = filename
 	err = xml.Unmarshal(data, &v)
 	if err != nil {
 		fmt.Printf("error: %v", err)
