@@ -1,24 +1,24 @@
 {{ define "content-left" }}
-        <div class="layui-side-scroll">
-            <!-- 左侧垂直导航区域-->
-            <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                {{range .menu.Branches}}
-                 <li class="layui-nav-item">
-                    <a class="" href="javascript:;">{{ .Curname | }}</a>
-                    <dl class="layui-nav-child">
-                        <div id="test2"></div>
-                    </dl>
-                </li>
-                {{end}}
-                <li class="layui-nav-item">
-                    <a href="javascript:;">天梭</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="javascript:;" data-id="3" data-title="存款列表"
-                               　data-url="index.php?&a=adminList" class="site-demo-active" data-type="tabAdd">梭子鱼</a>
-                        </dd>
-                        <dd><a href="javascript:;">好吃</a></dd>
-                    </dl>
-                </li>
-            </ul>
-        </div>
+    <div class="layui-side-scroll">
+        <!-- 左侧垂直导航区域-->
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            {{range .menu.Branches}}
+             <li class="layui-nav-item">
+                <a class="" href="javascript:;">{{ .Curname }}</a>
+                <dl class="layui-nav-child">
+                    <div id="{{ .Curname }}"></div>
+                </dl>
+            </li>
+            {{end}}
+            <li class="layui-nav-item">
+                <a href="javascript:;">系统管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:;" data-id="3" data-title="新增页面"
+                           　data-url="index.php?&a=adminList" class="site-demo-active" data-type="tabAdd">新增页面</a>
+                    </dd>
+                    <dd><a href="javascript:;">系统设置</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
 {{end}}

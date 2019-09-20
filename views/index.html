@@ -15,7 +15,7 @@
     </div>
 
     <!--tab标签-->
-    <div class="layui-tab" lay-filter="demo" lay-allowclose="true" style="margin-left: 200px;">
+    <div class="layui-tab" lay-filter="param-tab" lay-allowclose="true" style="margin-left: 200px;">
         {{ template "content-tab" .}}
     </div>
 
@@ -27,7 +27,8 @@
 <script src="/public/layui/layui.js"></script>
 <script>
     {{ template "view_tree_data" .menu }}
+    {{ template "build_tree" .menu }}
 </script>
-<script type="text/javascript" src="/public/scripts/index.js"></script>
+<!-- <script type="text/javascript" src="/public/scripts/index.js"></script> -->
 </body>
 </html>
