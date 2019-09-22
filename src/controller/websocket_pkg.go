@@ -1,4 +1,4 @@
-package main
+package controller
 
 import (
 	"log"
@@ -42,7 +42,7 @@ var serverEvents = websocket.Namespaces{
 	},
 }
 
-func setupWebsocket(app *iris.Application) {
+func SetupWebsocket(app *iris.Application) {
 	// create our websocket server
 	// Almost all features of neffos are disabled because no custom message can pass
 	// when app expects to accept and send only raw websocket native messages.
@@ -54,14 +54,14 @@ func setupWebsocket(app *iris.Application) {
 	ws := websocket.New(
 		websocket.DefaultGorillaUpgrader,
 		serverEvents)
-	ws.OnConnect = func(c *websocket.Conn) error {
-		log.Printf("[%s] Connected to server!", c.ID())
-		return nil
-	}
+	// ws.OnConnect = func(c *websocket.Conn) error {
+	// 	log.Printf("[%s] Connected to server!", c.ID())
+	// 	return nil
+	// }
 
-	ws.OnDisconnect = func(c *websocket.Conn) {
-		log.Printf("[%s] Disconnected from server", c.ID())
-	}
+	// ws.OnDisconnect = func(c *websocket.Conn) {
+	// 	log.Printf("[%s] Disconnected from server", c.ID())
+	// }
 	// register the server on an endpoint.
 	// see the inline javascript code in the websockets.html,
 	// this endpoint is used to connect to the server.

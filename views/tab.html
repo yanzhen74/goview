@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
         <title>{{ .paras.File }}</title>
-            <link rel="stylesheet" href="/public/layui/css/layui.css" />
-            <script type="text/javascript" src="/public/scripts/neffos.js"></script>
+        <link rel="stylesheet" href="/public/layui/css/layui.css" />
+        <script type="text/javascript" src="/public/scripts/neffos.js"></script>
     </head>
     <body>
         {{ template "websocket" .}}
@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 {{ range .paras.ParaList }}
-                <tr id="{{.ID}}{{.ParaKey}}">
+                <tr id="{{.Index}}">
                     <td>{{ .ID }}</td>
                     <td>{{ .ParaKey }}</td>
                     <td>{{ .Name }}</td>
@@ -45,15 +45,15 @@
     </body>
 
 <script>
-    document.getElementById("1WABB1006").cells[3].innerHTML = "0xA0F0"
-    document.getElementById("1WABB1006").cells[4].innerHTML = "535"
+    document.getElementById("0").cells[3].innerHTML = "0xA0F0"
+    document.getElementById("1").cells[4].innerHTML = "535"
     timeOutAlert();
     function timeOutAlert(){
         timeOut = window.setTimeout(function(){
             console.log("time out..." + timeOut);
 
-    document.getElementById("1WABB1006").cells[3].innerHTML = "0xA0F0"+timeOut;
-    document.getElementById("1WABB1006").cells[4].innerHTML = "535"+timeOut;
+    // document.getElementById("0").cells[3].innerHTML = "0xA0F0"+timeOut;
+    // document.getElementById("1").cells[4].innerHTML = "535"+timeOut;
             if (timeOut < 100)
                 timeOutAlert();
         },100);

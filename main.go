@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/kataras/iris"
+	"github.com/yanzhen74/goview/src/controller"
 	"github.com/yanzhen74/goview/src/model"
 
 	"github.com/kataras/iris/middleware/logger"
@@ -33,7 +34,7 @@ func main() {
 	app.RegisterView(tmpl)
 
 	// websocket
-	setupWebsocket(app)
+	controller.SetupWebsocket(app)
 
 	pages, err := model.Init_pages("config/resource/menu")
 

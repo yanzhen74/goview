@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
 type Paras struct {
@@ -14,7 +15,8 @@ type Paras struct {
 }
 
 type Para_Page struct {
-	XMLName        xml.Name    `xml:"Para"`
+	XMLName        xml.Name `xml:"Para"`
+	Index          string
 	Name           string      `xml:"name,attr"`
 	ID             string      `xml:"id,attr"`
 	ParaKey        string      `xml:"Parakey,attr"`
@@ -38,7 +40,7 @@ func Read_view_page(filename string) (*Paras, error) {
 	}
 	defer file.Close()
 	data, err := ioutil.ReadFile(filename)
-	fmt.Println(string(data))
+	// fmt.Println(string(data))
 	if err != nil {
 		fmt.Printf("error: %v", err)
 		return nil, err
@@ -52,6 +54,13 @@ func Read_view_page(filename string) (*Paras, error) {
 		return nil, err
 	}
 
+	index := 0
+	for i, _ := range v.ParaList {
+		v.ParaList[i].Index = strconv.Itoa(index)
+
+		fmt.Printf("index %d is %s\n", i, v.ParaList[i].Index)
+		index += 1
+	}
 	fmt.Println(v)
 
 	return &v, err

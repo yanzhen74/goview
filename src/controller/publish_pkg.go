@@ -1,4 +1,4 @@
-package main
+package controller
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ func publishPkg(nsConn *websocket.NSConn,
 
 	for i := 0; i < 100; i++ {
 
-		pkg := fmt.Sprintf("grid data %d", i)
+		pkg := fmt.Sprintf("0,%d,%d,%d;1,%d,%d,%d;2,%d,%d,%d", i, i, i, i, i, i, i, i, i)
 		nsConn.Emit(string(msg.Body), []byte(pkg))
 		time.Sleep(100 * time.Millisecond)
 	}

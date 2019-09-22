@@ -4,7 +4,7 @@
 
 <!-- when clicked then an iris websocket event will be sent to the server
 at this example we registered the 'chat' -->
-<button id="sendBtn" onclick="send()">Send</button>
+<button id="sendBtn" onclick="send()" disabled="true">Send</button>
 
 <!-- the messages will be shown here -->
 <pre id="output"></pre>
@@ -15,32 +15,6 @@ at this example we registered the 'chat' -->
     var port=document.location.port?(":"+document.location.port):"";
     // see app.Get("/echo", ws.Handler()) on main.go
     var wsURL = scheme + "://" + document.location.hostname  + port + "/echo";
-
-    var input=document.getElementById("input");
-    var output=document.getElementById("output");
-
-    // // Ws comes from the auto-served '/iris-ws.js'
-    // var socket = new WebSocket(wsURL)
-    // socket.onopen = (function(){
-    //     output.innerHTML += "Status: Connected\n";
-    //     input.value = "{{ .paras.File }}";
-    //     send();
-    // });
-
-    // socket.onclose = (function(){
-    //     appendMessage("<div><center><h3>Disconnected</h3></center></div>");
-    // });
-
-    // // read events from the server
-    // socket.onmessage = (function(msg){
-    //     addMessage("<div>" + msg.Body + "</div>");
-    // });
-
-    function send() {
-        addMessage("<div style='color: red'> me: " + input.value + "</div>"); // write ourselves
-        socket.send(input.value); // send chat event data to the websocket server
-        input.value  = ""; // clear the input
-    }
 
     function addMessage(msg) {
         output.insertAdjacentHTML('afterbegin', msg);
@@ -59,7 +33,7 @@ at this example we registered the 'chat' -->
 
         sendBtn.disabled = false;
         sendBtn.onclick = function () {
-            const input = inputTxt.values
+            const input = inputTxt.value
             inputTxt.value = "";
 
             nsConn.emit("pkg", input);
@@ -67,7 +41,7 @@ at this example we registered the 'chat' -->
         };
     }
 
-    async function runExample() {
+    async function runWebsocket() {
         try {
             const conn = await neffos.dial(wsURL, {
                 default: { // "default" namespace.
@@ -79,7 +53,19 @@ at this example we registered the 'chat' -->
                         addMessage("disconnected from namespace: " + msg.Namespace);
                     },
                     {{ .paras.File }}: function (nsConn, msg) { // "pkg" event.
-                        addMessage(msg.Body);
+                        var para;
+                        var strBodys = String(msg.Body).split(';');
+                        for (i=0; i< strBodys.length; i++) {
+                            var results = strBodys[i].split(',');
+                            for (j=0; j< results.length; j++){
+                                if (j > 0) {
+                                    para.cells[j+2].innerHTML = results[j];
+                                }
+                                else {
+                                    para = document.getElementById(results[j])
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -96,6 +82,6 @@ at this example we registered the 'chat' -->
         }
     }
 
-    runExample();
+    runWebsocket();
 </script>
 {{end}}
