@@ -33,6 +33,7 @@ type PayLoad struct {
 type SubAddress struct {
 	XMLNode  xml.Name `xml:"SubAddress"`
 	Name     string   `xml:"Name,attr"`
+	ID       string   `xml:"id,attr"`
 	ParaList []Para   `xml:"Para"`
 }
 
@@ -60,28 +61,28 @@ type ParaRange struct {
 	Alarm_max_equal        string   `xml:"alarm_max_equal,attr"`
 }
 
-func Read_para_dict(filename string) (*Aircrafts, error) {
+func Read_para_dict(filename string) (Aircrafts, error) {
+	v := Aircrafts{}
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Printf("error: %v", err)
-		return nil, err
+		return v, err
 	}
 	defer file.Close()
 	data, err := ioutil.ReadFile(filename)
 	fmt.Println(string(data))
 	if err != nil {
 		fmt.Printf("error: %v", err)
-		return nil, err
+		return v, err
 	}
 
-	v := Aircrafts{}
 	err = xml.Unmarshal(data, &v)
 	if err != nil {
 		fmt.Printf("error: %v", err)
-		return nil, err
+		return v, err
 	}
 
 	fmt.Println(v)
 
-	return &v, err
+	return v, err
 }

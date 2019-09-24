@@ -5,9 +5,14 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/websocket"
+	"github.com/yanzhen74/goview/src/model"
 )
 
 const namespace = "default"
+
+var Frame_page_map map[string]int
+var view_chan_list []chan string
+var Dicts *[]model.FrameDict
 
 // if namespace is empty then simply websocket.Events{...} can be used instead.
 var serverEvents = websocket.Namespaces{
@@ -31,7 +36,16 @@ var serverEvents = websocket.Namespaces{
 			log.Printf("Server got: %s from [%s]", msg.Body, nsConn.Conn.ID())
 
 			nsConn.Conn.Server().Broadcast(nsConn, msg)
-			go publishPkg(nsConn, msg)
+
+			// add a channel between process_0c_pkg and publishPkg
+			view_chan := make(chan string, 10)
+			(*Dicts)[Frame_page_map[(string)(msg.Body)]].Frame_type.ChanViewReg <- view_chan
+
+			log.Printf("Channel bind ok")
+
+			view_chan_list = append(view_chan_list, view_chan)
+
+			go publishPkg(nsConn, msg, view_chan)
 
 			// Write message back to the client message owner with:
 			// nsConn.Emit("chat", msg)
@@ -59,6 +73,7 @@ func SetupWebsocket(app *iris.Application) {
 	// 	return nil
 	// }
 
+	view_chan_list = make([]chan string, 0, 100)
 	// ws.OnDisconnect = func(c *websocket.Conn) {
 	// 	log.Printf("[%s] Disconnected from server", c.ID())
 	// }

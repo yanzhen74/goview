@@ -33,8 +33,8 @@ func main() {
 	tmpl.Reload(true)
 	app.RegisterView(tmpl)
 
-	// websocket
-	controller.SetupWebsocket(app)
+	// map frame page
+	controller.Frame_page_map = make(map[string]int)
 
 	pages, err := model.Init_pages("config/resource/menu")
 
@@ -42,6 +42,19 @@ func main() {
 		fmt.Printf("error is %v", err)
 		return
 	}
+
+	// map
+	z, _ := model.Read_para_dict("config/conf/ParameterDictionary.xml")
+
+	controller.Dicts = model.Get_frame_dict_list(z)
+
+	controller.Frame_page_map[pages.Branches[0].Branches[0].Branches[0].Branches[0].Curdir] = 0
+	controller.Frame_page_map[pages.Branches[1].Branches[0].Branches[0].Branches[0].Curdir] = 1
+	go controller.Process0cPkg((*controller.Dicts)[0])
+	go controller.Process0cPkg((*controller.Dicts)[1])
+
+	// websocket
+	controller.SetupWebsocket(app)
 
 	app.Get("/tab/{page:path}", func(ctx iris.Context) {
 		page := ctx.Params().Get("page")

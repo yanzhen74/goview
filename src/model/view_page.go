@@ -9,9 +9,12 @@ import (
 )
 
 type Paras struct {
-	XMLName  xml.Name `xml:"Paras"`
-	File     string
-	ParaList []Para_Page `xml:"Para"`
+	XMLName   xml.Name `xml:"Paras"`
+	File      string
+	MissionID string      `xml:"MissionID,attr"`
+	DataType  string      `xml:"DataType,attr"`
+	PageType  string      `xml:"PageType,attr"`
+	ParaList  []Para_Page `xml:"Para"`
 }
 
 type Para_Page struct {

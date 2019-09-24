@@ -13,4 +13,6 @@ func Test_init_page_tree(t *testing.T) {
 		fmt.Printf("error %v", err)
 	}
 	fmt.Println("hello ", z)
+	fmt.Println("...", z.Branches[0].Branches[0].Branches[0].Branches[0].Curdir)
+	fmt.Println("...", z.Branches[1].Branches[0].Branches[0].Branches[0].Curdir)
 }
