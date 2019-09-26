@@ -10,7 +10,7 @@ import (
 
 const namespace = "default"
 
-var Frame_page_map map[string]int
+var Frame_page_map map[string][]int
 var view_chan_list []chan string
 var Dicts *[]model.FrameDict
 
@@ -39,7 +39,9 @@ var serverEvents = websocket.Namespaces{
 
 			// add a channel between process_0c_pkg and publishPkg
 			view_chan := make(chan string, 10)
-			(*Dicts)[Frame_page_map[(string)(msg.Body)]].Frame_type.ChanViewReg <- view_chan
+			for _, f := range Frame_page_map[(string)(msg.Body)] {
+				(*Dicts)[f].Frame_type.ChanViewReg <- view_chan
+			}
 
 			log.Printf("Channel bind ok")
 

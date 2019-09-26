@@ -34,7 +34,9 @@ func main() {
 	app.RegisterView(tmpl)
 
 	// map frame page
-	controller.Frame_page_map = make(map[string]int)
+	controller.Frame_page_map = map[string][]int{}
+	controller.Frame_page_map["aaa"] = make([]int, 0, 10)
+	fmt.Println(controller.Frame_page_map)
 
 	pages, err := model.Init_pages("config/resource/menu")
 
@@ -43,15 +45,13 @@ func main() {
 		return
 	}
 
-	// map
+	// Start receiver for each frame in list
 	z, _ := model.Read_para_dict("config/conf/ParameterDictionary.xml")
-
 	controller.Dicts = model.Get_frame_dict_list(z)
 
-	controller.Frame_page_map[pages.Branches[0].Branches[0].Branches[0].Branches[0].Curdir] = 0
-	controller.Frame_page_map[pages.Branches[1].Branches[0].Branches[0].Branches[0].Curdir] = 1
-	go controller.Process0cPkg((*controller.Dicts)[0])
-	go controller.Process0cPkg((*controller.Dicts)[1])
+	for _, d := range *controller.Dicts {
+		go controller.Process0cPkg(d)
+	}
 
 	// websocket
 	controller.SetupWebsocket(app)
@@ -65,6 +65,13 @@ func main() {
 			return
 		}
 		fmt.Println("paras: ", paras)
+
+		// bind view page to frame
+		// dir := pages.Branches[i].Branches[0].Branches[0].Branches[0].Curdir
+		dir := paras.File
+		controller.Frame_page_map[dir] = append(controller.Frame_page_map[dir], 0)
+		controller.Frame_page_map[dir] = append(controller.Frame_page_map[dir], 1)
+
 		ctx.ViewData("paras", paras)
 		ctx.View("/tab.html")
 	})
