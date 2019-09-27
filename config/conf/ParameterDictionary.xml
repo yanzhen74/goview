@@ -2,7 +2,7 @@
 <AirCrafts>
     <AirCraft Name="XJYH">
         <DataType Name="RTM">
-            <PayLoad Name="">
+            <PayLoad Name="SGYC">
                 <SubAddress Name="PK-CEH2" id="0741SSIDccsdsID(10字节)">
                     <Para id="1" Parakey="DABB1006" name="复用:1" type="hex" process_type="raw" process_unit="byte" process_start="0" process_end="1">
                         <ParaRange RangeSeq="1" ParaRangeSpecification="一路" alarm_min="01" alarm_min_equal="true" alarm_max="01" alarm_max_equal="true" />
@@ -28,9 +28,9 @@
             </PayLoad>
         </DataType>
     </AirCraft>
-    <AirCraft Name="YHYH">
+    <AirCraft Name="WYG">
         <DataType Name="RTM">
-            <PayLoad Name="">
+            <PayLoad Name="SGYC">
                 <SubAddress Name="PK-CEH2">
                     <Para id="1" Parakey="DABB1006" name="复用:1" type="hex" process_type="raw" process_unit="byte" process_start="0" process_end="1">
                         <ParaRange RangeSeq="1" ParaRangeSpecification="一路" alarm_min="01" alarm_min_equal="true" alarm_max="01" alarm_max_equal="true" />

@@ -34,9 +34,7 @@ func main() {
 	app.RegisterView(tmpl)
 
 	// map frame page
-	controller.Frame_page_map = map[string][]int{}
-	controller.Frame_page_map["aaa"] = make([]int, 0, 10)
-	fmt.Println(controller.Frame_page_map)
+	controller.File_paras_map = map[string]*model.Paras{}
 
 	pages, err := model.Init_pages("config/resource/menu")
 
@@ -68,9 +66,7 @@ func main() {
 
 		// bind view page to frame
 		// dir := pages.Branches[i].Branches[0].Branches[0].Branches[0].Curdir
-		dir := paras.File
-		controller.Frame_page_map[dir] = append(controller.Frame_page_map[dir], 0)
-		controller.Frame_page_map[dir] = append(controller.Frame_page_map[dir], 1)
+		controller.File_paras_map[paras.File] = paras
 
 		ctx.ViewData("paras", paras)
 		ctx.View("/tab.html")

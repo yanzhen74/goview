@@ -10,7 +10,7 @@ import (
 
 const namespace = "default"
 
-var Frame_page_map map[string][]int
+var File_paras_map map[string]*model.Paras
 var view_chan_list []chan string
 var Dicts *[]model.FrameDict
 
@@ -39,11 +39,21 @@ var serverEvents = websocket.Namespaces{
 
 			// add a channel between process_0c_pkg and publishPkg
 			view_chan := make(chan string, 10)
-			for _, f := range Frame_page_map[(string)(msg.Body)] {
-				(*Dicts)[f].Frame_type.ChanViewReg <- view_chan
-			}
+			paras := File_paras_map[(string)(msg.Body)]
+			info := model.Get_view_page_regist_info(*paras, view_chan)
 
-			log.Printf("Channel bind ok")
+			for _, i := range *(info.View_dict) {
+				for _, d := range *Dicts {
+					if d.Frame_type.MissionID == (*i).View_type.MissionID &&
+						d.Frame_type.DataType == (*i).View_type.DataType &&
+						d.Frame_type.PayloadName == (*i).View_type.PayloadName &&
+						d.Frame_type.SubAddressName == (*i).View_type.SubAddressName {
+						d.Frame_type.ChanViewReg <- info
+						log.Printf("Channel bind %s ok\n", info.File)
+						break
+					}
+				}
+			}
 
 			view_chan_list = append(view_chan_list, view_chan)
 

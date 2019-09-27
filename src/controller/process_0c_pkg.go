@@ -20,13 +20,14 @@ func Process0cPkg(frame model.FrameDict) {
 		chose, value, _ := reflect.Select(cases)
 		switch chose {
 		case 0: // new chan_view
-			frame.Frame_type.ChanViewList = append(frame.Frame_type.ChanViewList, (value.Interface().(chan string)))
+			info := (value.Interface().(*model.View_page_regist_info))
+			frame.Frame_type.ChanViewList = append(frame.Frame_type.ChanViewList, info.View_chan)
 			cases = update(ticker, frame.Frame_type.ChanViewReg, frame.Frame_type.ChanViewList, pkg)
 		case 1: // time
 			pkg = fmt.Sprintf("0,%d,中国字%d,%d;1,%d,%d,%d;2,%d,%d,%d", i, i, i, i, i, i, i, i, i)
 		default:
-			pkg = fmt.Sprintf("0,%d,中国字%d,%d;1,%d,%d,%d;2,%d,%d,%d", i, i, i, i, i, i, i, i, i)
-			fmt.Printf("channel no %s %d\n", frame.Frame_type.MissionID, len(frame.Frame_type.ChanViewList))
+			pkg = fmt.Sprintf("0,%d,%s%d,%d;1,%d,%d,%d;2,%d,%d,%d", i, frame.Frame_type.MissionID, i, i, i, i, i, i, i, i)
+			// fmt.Printf("channel no %s %d\n", frame.Frame_type.MissionID, len(frame.Frame_type.ChanViewList))
 			time.Sleep(time.Millisecond * time.Duration(100))
 			cases = update(ticker, frame.Frame_type.ChanViewReg, frame.Frame_type.ChanViewList, pkg)
 		}
@@ -48,7 +49,7 @@ func Process0cPkg(frame model.FrameDict) {
 
 func update(
 	ticker *time.Ticker,
-	chan_view_reg chan chan string,
+	chan_view_reg chan *model.View_page_regist_info,
 	chan_view_list []chan string,
 	send_value interface{}) (cases []reflect.SelectCase) {
 	// chan view register
