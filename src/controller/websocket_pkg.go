@@ -10,9 +10,35 @@ import (
 
 const namespace = "default"
 
+// map nsConn to info
+var conn_info_map map[*websocket.NSConn]*model.View_page_regist_info
+
+// frontend view page paras model
 var File_paras_map map[string]*model.Paras
-var view_chan_list []chan string
+
+// backend frame model
 var Dicts *[]model.FrameDict
+
+func regist_info(nsConn *websocket.NSConn, action int) {
+	info := conn_info_map[nsConn]
+	info.Set_action(action)
+	for _, i := range *(info.View_dict) {
+		for _, d := range *Dicts {
+			if d.Frame_type.MissionID == (*i).View_type.MissionID &&
+				d.Frame_type.DataType == (*i).View_type.DataType &&
+				d.Frame_type.PayloadName == (*i).View_type.PayloadName &&
+				d.Frame_type.SubAddressName == (*i).View_type.SubAddressName {
+				d.Frame_type.UserChanReg <- info
+				if action == 0 {
+					log.Printf("Channel unbound %s ok\n", info.File)
+				} else {
+					log.Printf("Channel bound %s ok\n", info.File)
+				}
+				break
+			}
+		}
+	}
+}
 
 // if namespace is empty then simply websocket.Events{...} can be used instead.
 var serverEvents = websocket.Namespaces{
@@ -28,6 +54,8 @@ var serverEvents = websocket.Namespaces{
 		},
 		websocket.OnNamespaceDisconnect: func(nsConn *websocket.NSConn, msg websocket.Message) error {
 			log.Printf("[%s] disconnected from namespace [%s]", nsConn, msg.Namespace)
+			regist_info(nsConn, 0)
+
 			return nil
 		},
 		"chat": func(nsConn *websocket.NSConn, msg websocket.Message) error {
@@ -37,25 +65,18 @@ var serverEvents = websocket.Namespaces{
 
 			nsConn.Conn.Server().Broadcast(nsConn, msg)
 
-			// add a channel between process_0c_pkg and publishPkg
-			view_chan := make(chan string, 10)
+			// bind frontend view page to backend frame which contains their params
 			paras := File_paras_map[(string)(msg.Body)]
-			info := model.Get_view_page_regist_info(*paras, view_chan)
+			// add a channel between backend and frontend
+			view_chan := make(chan string, 10)
+			info := model.Get_view_page_regist_info(paras, view_chan)
 
-			for _, i := range *(info.View_dict) {
-				for _, d := range *Dicts {
-					if d.Frame_type.MissionID == (*i).View_type.MissionID &&
-						d.Frame_type.DataType == (*i).View_type.DataType &&
-						d.Frame_type.PayloadName == (*i).View_type.PayloadName &&
-						d.Frame_type.SubAddressName == (*i).View_type.SubAddressName {
-						d.Frame_type.ChanViewReg <- info
-						log.Printf("Channel bind %s ok\n", info.File)
-						break
-					}
-				}
-			}
+			// bind nsConn to info, for unregist it when close
+			conn_info_map[nsConn] = info
+			info.Conn = nsConn
 
-			view_chan_list = append(view_chan_list, view_chan)
+			// regist info
+			regist_info(nsConn, 1)
 
 			go publishPkg(nsConn, msg, view_chan)
 
@@ -85,7 +106,7 @@ func SetupWebsocket(app *iris.Application) {
 	// 	return nil
 	// }
 
-	view_chan_list = make([]chan string, 0, 100)
+	conn_info_map = make(map[*websocket.NSConn]*model.View_page_regist_info)
 	// ws.OnDisconnect = func(c *websocket.Conn) {
 	// 	log.Printf("[%s] Disconnected from server", c.ID())
 	// }

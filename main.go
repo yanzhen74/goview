@@ -33,11 +33,10 @@ func main() {
 	tmpl.Reload(true)
 	app.RegisterView(tmpl)
 
-	// map frame page
+	// map file and paras - left menu
 	controller.File_paras_map = map[string]*model.Paras{}
 
 	pages, err := model.Init_pages("config/resource/menu")
-
 	if err != nil {
 		fmt.Printf("error is %v", err)
 		return
@@ -57,17 +56,18 @@ func main() {
 	app.Get("/tab/{page:path}", func(ctx iris.Context) {
 		page := ctx.Params().Get("page")
 		fmt.Println("open:", page)
+
+		// read view page paras from config file
 		paras, err := model.Read_view_page(page)
 		if err != nil {
 			fmt.Printf("error is %v", err)
 			return
 		}
-		fmt.Println("paras: ", paras)
 
-		// bind view page to frame
-		// dir := pages.Branches[i].Branches[0].Branches[0].Branches[0].Curdir
+		// for websocket to use paras
 		controller.File_paras_map[paras.File] = paras
 
+		// show table of paras
 		ctx.ViewData("paras", paras)
 		ctx.View("/tab.html")
 	})

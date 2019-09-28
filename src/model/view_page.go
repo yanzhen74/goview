@@ -61,7 +61,7 @@ func Read_view_page(filename string) (*Paras, error) {
 	for i, _ := range v.ParaList {
 		v.ParaList[i].Index = strconv.Itoa(index)
 
-		fmt.Printf("index %d is %s\n", i, v.ParaList[i].Index)
+		// fmt.Printf("index %d is %s\n", i, v.ParaList[i].Index)
 		index += 1
 	}
 	fmt.Println(v)
