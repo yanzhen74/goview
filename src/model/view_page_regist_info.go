@@ -2,6 +2,13 @@ package model
 
 import "github.com/kataras/iris/websocket"
 
+//
+// view page has multi-source parameters
+// so merge each group for same subaddress and payload
+// to make a ViewDict array
+// every item in array is a group
+//
+
 type View_page_regist_info struct {
 	Conn      *websocket.NSConn
 	File      string

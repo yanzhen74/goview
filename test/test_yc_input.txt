@@ -1,0 +1,8 @@
+#<DATA_TYPE>_<MISSIONID>_<SubAddress>_<DataFormat> <station> <FrameNo> <GroundTime>
+RTM_TGTH_PK-CEH2_Result  00  0   00:00:03.3345
+#<DataItemID> <DataItemCode> <DataItemResult>;...
+1 00000000 0.000;2 00000000 0.000;33 ee 238;
+
+# other example
+TM_TZ01_RTPK1_Result    00  1   00:00:05.7057
+1 00 0.000;2 ee 238;3 0000dee2009e 0-15:50:58.0790;4 127 0000000000eeccaa8866442200 17207315779083837952;

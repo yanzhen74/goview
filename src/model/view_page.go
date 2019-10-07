@@ -57,6 +57,7 @@ func Read_view_page(filename string) (*Paras, error) {
 		return nil, err
 	}
 
+	// every param has only one Index but maybe multi ID
 	index := 0
 	for i, _ := range v.ParaList {
 		v.ParaList[i].Index = strconv.Itoa(index)
