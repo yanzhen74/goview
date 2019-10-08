@@ -9,6 +9,7 @@ type FrameType struct {
 	SubAddressName string
 	UserChanMap    map[*websocket.NSConn]chan string
 	UserChanReg    chan *View_page_regist_info
+	NetChanFrame   chan string
 	ID             string
 }
 
@@ -31,6 +32,7 @@ func Get_frame_dict_list(aircraft Aircrafts) *[]FrameDict {
 					framedict.Frame_type.ID = s.ID
 					framedict.Frame_type.UserChanMap = make(map[*websocket.NSConn]chan string)
 					framedict.Frame_type.UserChanReg = make(chan *View_page_regist_info, 10)
+					framedict.Frame_type.NetChanFrame = make(chan string, 10)
 					framedict.ParaList = s.ParaList
 
 					framedicts = append(framedicts, framedict)

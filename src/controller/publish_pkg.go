@@ -15,6 +15,7 @@ func publishPkg(nsConn *websocket.NSConn,
 			log.Printf("channel has closed so publishPkg exit too\n")
 			break
 		}
+		// log.Printf("receive %d\n", i)
 		nsConn.Emit(string(msg.Body), []byte(pkg))
 	}
 	return nil
