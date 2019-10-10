@@ -15,17 +15,14 @@ import (
 var para_view_map map[*websocket.NSConn]map[int]string
 
 func Process0cPkg(frame model.FrameDict) {
-	// chan_view := <-frame.Frame_type.UserChanReg
-	// frame.Frame_type.UserChanMap = append(frame.Frame_type.UserChanMap, chan_view)
 	para_view_map = make(map[*websocket.NSConn]map[int]string)
 
 	// pkg should send only required parameters to view's chan
 	var pkg map[chan string]interface{} = make(map[chan string]interface{})
 
 	ticker := time.NewTicker(time.Millisecond * time.Duration(100))
-	cases := update(frame.Frame_type.NetChanFrame, ticker, frame.Frame_type.UserChanReg, nil, nil)
+	cases := init_cases(frame.Frame_type.NetChanFrame, ticker, frame.Frame_type.UserChanReg)
 
-	d := 0
 	for i := 0; ; {
 		chose, value, _ := reflect.Select(cases)
 
@@ -33,17 +30,19 @@ func Process0cPkg(frame model.FrameDict) {
 		switch chose {
 		case 0: // regist/unregist chan_view
 			info := (value.Interface().(*model.View_page_regist_info))
-			if 1 == regist_view_chan(&frame, info) {
-				pkg[info.View_chan] = ""
+			if -1 == regist_view_chan(&frame, info) {
+				delete(pkg, info.View_chan)
 			}
-			cases = update(frame.Frame_type.NetChanFrame, ticker, frame.Frame_type.UserChanReg, nil, nil)
 		case 1: // time
+			// to be deleted, simulate net receiver
 			frame.Frame_type.NetChanFrame <- "hello world"
 		case 2: // net frame
 			// update when receive net data
-			v := make([]string, 0, 10)
+			hello := (value.Interface()).(string)
+
+			v := make(map[int]string)
 			for j := 0; j < len(frame.ParaList); j++ {
-				v = append(v, fmt.Sprintf(",%d,%s%d,%d;", i, frame.Frame_type.MissionID, i, i))
+				v[j] = fmt.Sprintf(",%d,%s%d,%s%d;", i, frame.Frame_type.MissionID, i, hello, i)
 			}
 
 			var buffer bytes.Buffer
@@ -55,17 +54,15 @@ func Process0cPkg(frame model.FrameDict) {
 				}
 				pkg[view_chan] = buffer.String()
 			}
-			cases = update(frame.Frame_type.NetChanFrame, ticker, frame.Frame_type.UserChanReg, frame.Frame_type.UserChanMap, pkg)
+			// ? when one view is blocked, should not sent to it
+			// todo : should delete the block one, not tails
+			if len(cases) > 3+len(frame.Frame_type.UserChanMap) {
+				cases = cases[:len(cases)-len(frame.Frame_type.UserChanMap)]
+			}
+			send_to_view(&cases, frame.Frame_type.UserChanMap, pkg)
 			i++
 		default:
-			// log.Printf("default %d\n", d)
 			cases = append(cases[:chose], cases[chose+1:]...)
-			d++
-			// pkg = fmt.Sprintf("0,%d,%s%d,%d;1,%d,%d,%d;2,%d,%d,%d", i, frame.Frame_type.MissionID, i, i, i, i, i, i, i, i)
-			//fmt.Printf("send ok %s %d %d\n", frame.Frame_type.MissionID, len(frame.Frame_type.UserChanMap), i)
-			// fmt.Printf("channel no %s %d %d\n", frame.Frame_type.MissionID, len(frame.Frame_type.UserChanMap), i)
-			// time.Sleep(time.Millisecond * time.Duration(1))
-			//cases = update(ticker, frame.Frame_type.UserChanReg, frame.Frame_type.UserChanMap, pkg)
 		}
 	}
 }
@@ -116,12 +113,10 @@ func regist_view_chan(frame *model.FrameDict, info *model.View_page_regist_info)
 	}
 }
 
-func update(
+func init_cases(
 	chan_net_frame chan string,
 	ticker *time.Ticker,
-	chan_view_reg chan *model.View_page_regist_info,
-	user_chan_view_map map[*websocket.NSConn]chan string,
-	send_value_map map[chan string]interface{}) (cases []reflect.SelectCase) {
+	chan_view_reg chan *model.View_page_regist_info) (cases []reflect.SelectCase) {
 
 	// chan view register
 	selectcase := reflect.SelectCase{
@@ -137,26 +132,29 @@ func update(
 	}
 	cases = append(cases, selectcase)
 
-	// chan view register
+	// chan frame register
 	selectcase = reflect.SelectCase{
 		Dir:  reflect.SelectRecv,
 		Chan: reflect.ValueOf(chan_net_frame),
 	}
 	cases = append(cases, selectcase)
 
-	// 每个消费者
-	if user_chan_view_map == nil {
-		return
-	}
+	return
+}
 
+func send_to_view(
+	cases *[]reflect.SelectCase,
+	user_chan_view_map map[*websocket.NSConn]chan string,
+	send_value_map map[chan string]interface{}) {
+
+	// 每个消费者，发送一次后必须删除
 	for _, item := range user_chan_view_map {
 		send_value := send_value_map[item]
-		selectcase = reflect.SelectCase{
+		selectcase := reflect.SelectCase{
 			Dir:  reflect.SelectSend,
 			Chan: reflect.ValueOf(item),
 			Send: reflect.ValueOf(send_value),
 		}
-		cases = append(cases, selectcase)
+		*cases = append(*cases, selectcase)
 	}
-	return
 }
