@@ -33,6 +33,12 @@ func main() {
 	tmpl.Reload(true)
 	app.RegisterView(tmpl)
 
+	// init net config
+	netConfig, err := model.Read_network_config("config/conf/NetWork.xml")
+
+	// init net
+	controller.Init_network(netConfig)
+
 	// map file and paras - left menu
 	controller.File_paras_map = map[string]*model.Paras{}
 
@@ -47,8 +53,12 @@ func main() {
 	controller.Dicts = model.Get_frame_dict_list(z)
 
 	for _, d := range *controller.Dicts {
+		controller.Bind_network(d)
 		go controller.Process0cPkg(d)
 	}
+
+	// Receive network data
+	controller.Run_network()
 
 	// websocket
 	controller.SetupWebsocket(app)

@@ -35,7 +35,7 @@ func Process0cPkg(frame model.FrameDict) {
 			}
 		case 1: // time
 			// to be deleted, simulate net receiver
-			frame.Frame_type.NetChanFrame <- "hello world"
+			//frame.Frame_type.NetChanFrame <- "hello world"
 		case 2: // net frame
 			// update when receive net data
 			hello := (value.Interface()).(string)
