@@ -53,7 +53,7 @@ func main() {
 	controller.Dicts = model.Get_frame_dict_list(z)
 
 	for _, d := range *controller.Dicts {
-		controller.Bind_network(d)
+		controller.Bind_network(d.Frame_type)
 		go controller.Process0cPkg(d)
 	}
 

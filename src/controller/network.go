@@ -19,9 +19,9 @@ func Init_network(config *model.NetWorks) bool {
 	return true
 }
 
-func Bind_network(frame model.FrameDict) {
+func Bind_network(frame model.FrameType) {
 	for _, p := range *netProcessers {
-		(*p).Subscribe(frame.Frame_type.DataType, frame.Frame_type.NetChanFrame)
+		(*p).Subscribe(&frame)
 	}
 }
 

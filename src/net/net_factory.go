@@ -7,7 +7,7 @@ import (
 type NetProcesser interface {
 	Init(*model.NetWork) (int, error)
 	Process() error
-	Subscribe(string, chan string)
+	Subscribe(*model.FrameType)
 }
 
 func GetNetProcesser(netType string) *NetProcesser {

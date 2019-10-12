@@ -1,4 +1,4 @@
-#<DATA_TYPE>_<MISSIONID>_<SubAddress>_<DataFormat> <station> <FrameNo> <GroundTime>
+#<DATA_TYPE>_<MISSIONID>_<SubAddress>_<DataFormat>\t<station>\t<FrameNo>\t<GroundTime>
 RTM_TGTH_PK-CEH2_Result  00  0   00:00:03.3345
 #<DataItemID> <DataItemCode> <DataItemResult>;...
 1 00000000 0.000;2 00000000 0.000;33 ee 238;

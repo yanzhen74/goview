@@ -2,6 +2,7 @@ package net
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -13,7 +14,7 @@ type NetKafka struct {
 	config             *sarama.Config
 	consumer           sarama.Consumer
 	partition_consumer sarama.PartitionConsumer
-	subscribers        *[]chan string
+	subscribers        *[]*model.FrameType
 }
 
 func (this *NetKafka) Init(config *model.NetWork) (int, error) {
@@ -40,30 +41,70 @@ func (this *NetKafka) Init(config *model.NetWork) (int, error) {
 	this.config = conf
 	this.consumer = consumer
 	this.partition_consumer = partition_consumer
-	this.subscribers = new([]chan string)
+	this.subscribers = new([]*model.FrameType)
 
 	return 1, nil
 }
 
-func (this *NetKafka) Subscribe(name string, sub chan string) {
-	if this.name == name {
+func (this *NetKafka) Subscribe(sub *model.FrameType) {
+	if this.name == sub.DataType {
 		*this.subscribers = append(*this.subscribers, sub)
 	}
 }
 
+// receive net frame, parse and dispatch
 func (this *NetKafka) Process() error {
+	ticker := time.NewTicker(time.Millisecond * time.Duration(100))
+	cases := init_cases(this.partition_consumer.Messages(),
+		this.partition_consumer.Errors(),
+		ticker)
 	for {
-		select {
-		case msg := <-this.partition_consumer.Messages():
+		chose, value, _ := reflect.Select(cases)
+
+		switch chose {
+		case 0: // chan_msg
+			msg := (value.Interface()).(*sarama.ConsumerMessage)
 			fmt.Printf("msg offset: %d, partition: %d, timestamp: %s, value: %s\n",
 				msg.Offset, msg.Partition, msg.Timestamp.String(), string(msg.Value))
-		case err := <-this.partition_consumer.Errors():
+		case 1: // chan_err
+			err := (value.Interface()).(*sarama.ConsumerError)
 			fmt.Printf("err :%s\n", err.Error())
-		case <-time.After(100 * time.Millisecond):
+		case 2: // timer
 			// to be deleted , just for test now
 			for _, c := range *this.subscribers {
-				c <- "hello world"
+				c.NetChanFrame <- "hello world"
 			}
+		default: // send ok
+			cases = append(cases[:chose], cases[chose+1:]...)
 		}
 	}
+}
+
+func init_cases(
+	chan_msg <-chan *sarama.ConsumerMessage,
+	chan_err <-chan *sarama.ConsumerError,
+	ticker *time.Ticker) (cases []reflect.SelectCase) {
+
+	// chan msg
+	selectcase := reflect.SelectCase{
+		Dir:  reflect.SelectRecv,
+		Chan: reflect.ValueOf(chan_msg),
+	}
+	cases = append(cases, selectcase)
+
+	// chan err
+	selectcase = reflect.SelectCase{
+		Dir:  reflect.SelectRecv,
+		Chan: reflect.ValueOf(chan_err),
+	}
+	cases = append(cases, selectcase)
+
+	// timer
+	selectcase = reflect.SelectCase{
+		Dir:  reflect.SelectRecv,
+		Chan: reflect.ValueOf(ticker.C),
+	}
+	cases = append(cases, selectcase)
+
+	return
 }
