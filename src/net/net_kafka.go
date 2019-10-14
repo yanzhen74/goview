@@ -66,14 +66,20 @@ func (this *NetKafka) Process() error {
 			msg := (value.Interface()).(*sarama.ConsumerMessage)
 			fmt.Printf("msg offset: %d, partition: %d, timestamp: %s, value: %s\n",
 				msg.Offset, msg.Partition, msg.Timestamp.String(), string(msg.Value))
+			// to be fixed
+			if len(cases) > 3+len((*(this.subscribers))) {
+				cases = cases[:len(cases)-len((*(this.subscribers)))]
+			}
+			this.send_to_subscribers(&cases, string(msg.Value))
+
 		case 1: // chan_err
 			err := (value.Interface()).(*sarama.ConsumerError)
 			fmt.Printf("err :%s\n", err.Error())
 		case 2: // timer
 			// to be deleted , just for test now
-			for _, c := range *this.subscribers {
-				c.NetChanFrame <- "hello world"
-			}
+			//for _, c := range *this.subscribers {
+			// c.NetChanFrame <- "hello world"
+			// }
 		default: // send ok
 			cases = append(cases[:chose], cases[chose+1:]...)
 		}
@@ -107,4 +113,19 @@ func init_cases(
 	cases = append(cases, selectcase)
 
 	return
+}
+
+func (this *NetKafka) send_to_subscribers(
+	cases *[]reflect.SelectCase,
+	send_value interface{}) {
+
+	// 每个消费者，发送一次后必须删除
+	for _, item := range *(this.subscribers) {
+		selectcase := reflect.SelectCase{
+			Dir:  reflect.SelectSend,
+			Chan: reflect.ValueOf((*item).NetChanFrame),
+			Send: reflect.ValueOf(send_value),
+		}
+		*cases = append(*cases, selectcase)
+	}
 }

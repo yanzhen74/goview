@@ -51,6 +51,8 @@ at this example we registered the 'chat' -->
                     },
                     _OnNamespaceDisconnect: function (nsConn, msg) {
                         addMessage("disconnected from namespace: " + msg.Namespace);
+                        // auto reconnect
+                        runWebsocket()
                     },
                     {{ .paras.File }}: function (nsConn, msg) { // "pkg" event.
                         var para;
