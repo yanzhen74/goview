@@ -2,9 +2,13 @@ package test
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/Shopify/sarama"
 	"github.com/sayems/golang.webdriver/selenium/pages"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tebeka/selenium"
@@ -44,14 +48,36 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 		})
 
 		Convey("She is invited to select a data table from a tree to view", func() {
-			t.Error("not implement")
+			tree := page.FindElementByLinkText("WYG")
+			tree.Click()
+			item, err := tree.FindElement("xpath", "//span[contains(text(),'PK-CEH2.xml')]")
+			item.Click()
+			So(err == nil, ShouldBeTrue)
 		})
 
-		Convey("She selects the gcyctd table", func() {})
+		Convey("She selects the PK-CEH2.xml table", func() {
+			table := page.FindElementByXpath("//div[@class='layui-tab' and @lay-filter='param-tab']")
+			So(table, ShouldNotBeNil)
+			name, _ := table.Text()
+			So(name, ShouldContainSubstring, "PK-CEH2.xml")
+		})
 
 		Convey("When she hits enter, the page updates, and now the page shows a table named gcyctd", func() {})
 
-		Convey("Just this time, gcyctd data is sent to the table, she sees the data varing in 2 fps", func() {})
+		Convey("Just this time, gcyctd data is sent to the table, she sees the data varing in 2 fps", func() {
+			p := simu_init_kafka()
+			defer p.Close()
+
+			table := page.FindElementByXpath("//div[@class='layui-tab' and @lay-filter='param-tab']")
+			frame, _ := table.FindElement("xpath", "//iframe[contains(@src, 'PK-CEH2.xml')]")
+			So(frame, ShouldNotBeNil)
+
+			// total 10 seconds
+			for i := 0; i < 500; i++ {
+				simu_send_kafka(p, i)
+				time.Sleep(time.Millisecond * 20)
+			}
+		})
 
 		Convey(`Edith wonders whether the site will remember her table.Then she sees that the site has generated
 			a unique URL for her -- there is some explanatory text to that effect. `, func() {})
@@ -62,4 +88,34 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 	})
 
 	browser.Quit()
+}
+
+func simu_init_kafka() (p sarama.SyncProducer) {
+
+	config := sarama.NewConfig()
+	config.Producer.Return.Successes = true
+	config.Producer.Timeout = 5 * time.Second
+	p, err := sarama.NewSyncProducer([]string{"10.211.55.2:9092"}, config)
+	if err != nil {
+		log.Printf("sarama.NewSyncProducer err, message=%s \n", err)
+		return nil
+	}
+
+	return p
+}
+
+func simu_send_kafka(p sarama.SyncProducer, i int) {
+	topic := "RTM"
+	srcValue := "sync: this is a message. index=%d\nreturn is ok!"
+	value := fmt.Sprintf(srcValue, i)
+	msg := &sarama.ProducerMessage{
+		Topic: topic,
+		Value: sarama.ByteEncoder(value),
+	}
+	part, offset, err := p.SendMessage(msg)
+	if err != nil {
+		log.Printf("send message(%s) err=%s \n", value, err)
+	} else {
+		fmt.Fprintf(os.Stdout, value+"发送成功，partition=%d, offset=%d \n", part, offset)
+	}
 }
