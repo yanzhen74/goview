@@ -106,8 +106,15 @@ func simu_init_kafka() (p sarama.SyncProducer) {
 
 func simu_send_kafka(p sarama.SyncProducer, i int) {
 	topic := "RTM"
-	srcValue := "sync: this is a message. index=%d\nreturn is ok!"
-	value := fmt.Sprintf(srcValue, i)
+	srcValue0 := "RTM_XJYH_PK-CEH2_Result\t.\tindex=%d\nreturn is ok!"
+	srcValue1 := "RTM_WYG_PK-CEH2_Result\t.\tindex=%d\nreturn is ok!"
+	var value string
+	if i%2 == 0 {
+		value = fmt.Sprintf(srcValue0, i)
+	} else {
+		value = fmt.Sprintf(srcValue1, i)
+	}
+
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Value: sarama.ByteEncoder(value),

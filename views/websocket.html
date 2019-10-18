@@ -59,12 +59,12 @@ at this example we registered the 'chat' -->
                         var strBodys = String(msg.Body).split(';');
                         for (i=0; i< strBodys.length; i++) {
                             var results = strBodys[i].split(',');
-                            for (j=0; j< results.length; j++){
-                                if (j > 0) {
+                            if (results.length > 0){
+                                // select param by index
+                                para = document.getElementById(results[0])
+                            
+                                for (j=1; j< results.length; j++){
                                     para.cells[j+2].innerHTML = results[j];
-                                }
-                                else {
-                                    para = document.getElementById(results[j])
                                 }
                             }
                         }
