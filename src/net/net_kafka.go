@@ -25,6 +25,7 @@ func (this *NetKafka) Init(config *model.NetWork) (int, error) {
 	conf := sarama.NewConfig()
 	conf.Consumer.Return.Errors = true
 	conf.Version = sarama.V0_11_0_2
+	conf.Consumer.MaxWaitTime = time.Duration(30) * time.Millisecond
 
 	// consumer
 	consumer, err := sarama.NewConsumer([]string{config.NetWorkIP}, conf)
