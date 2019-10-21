@@ -21,8 +21,9 @@ type Menu struct {
 
 func main() {
 	app := iris.New()
-	routes.Hub(app)
+
 	parse.AppOtherParse()
+	routes.Hub(app)
 
 	app.HandleDir("/public", "./public")
 	app.HandleDir("/config", "./config")

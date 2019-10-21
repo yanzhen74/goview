@@ -40,7 +40,7 @@ type SubAddress struct {
 type Para struct {
 	XMLNode       xml.Name    `xml:"Para"`
 	Name          string      `xml:"name,attr"`
-	ID            string      `xml:"id,attr"`
+	ID            int         `xml:"id,attr"`
 	ParaKey       string      `xml:"Parakey,attr"`
 	Type          string      `xml:"type,attr"`
 	Unit          string      `xml:"unit,attr"`

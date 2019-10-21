@@ -106,13 +106,13 @@ func simu_init_kafka() (p sarama.SyncProducer) {
 
 func simu_send_kafka(p sarama.SyncProducer, i int) {
 	topic := "RTM"
-	srcValue0 := "RTM_XJYH_PK-CEH2_Result\t.\tindex=%d\nreturn is ok!"
-	srcValue1 := "RTM_WYG_PK-CEH2_Result\t.\tindex=%d\nreturn is ok!"
+	srcValue0 := "RTM_XJYH_PK-CEH2_Result\t.\tindex=%d\n1 aa 233;2 bb 55;3 00000000 53.78;4 39a8 %d;5 55aa %d"
+	srcValue1 := "RTM_WYG_PK-CEH2_Result\t.\tindex=%d\n1 11 233;2 22 55;3 33 53.78;4 22cc %d;5 ffee %d"
 	var value string
 	if i%2 == 0 {
-		value = fmt.Sprintf(srcValue0, i)
+		value = fmt.Sprintf(srcValue0, i, i, i)
 	} else {
-		value = fmt.Sprintf(srcValue1, i)
+		value = fmt.Sprintf(srcValue1, i, i, i)
 	}
 
 	msg := &sarama.ProducerMessage{

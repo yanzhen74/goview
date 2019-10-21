@@ -58,14 +58,18 @@ at this example we registered the 'chat' -->
                         var para;
                         var strBodys = String(msg.Body).split(';');
                         for (i=0; i< strBodys.length; i++) {
+                            if (strBodys[i].trim() == "") {
+                                continue;
+                            }
                             var results = strBodys[i].split(',');
                             if (results.length > 0){
                                 // select param by index
                                 para = document.getElementById(results[0])
+
+                                para.cells[3].innerHTML = results[1];
+                                para.cells[4].innerHTML = results[2];
+                                para.cells[6].innerHTML = results[3];
                             
-                                for (j=1; j< results.length; j++){
-                                    para.cells[j+2].innerHTML = results[j];
-                                }
                             }
                         }
                     }

@@ -2,9 +2,12 @@ package controller
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kataras/iris/websocket"
@@ -23,6 +26,7 @@ func Process0cPkg(frame model.FrameDict) {
 	ticker := time.NewTicker(time.Millisecond * time.Duration(100))
 	cases := init_cases(frame.Frame_type.NetChanFrame, ticker, frame.Frame_type.UserChanReg)
 
+	e := 0
 	for i := 0; ; {
 		chose, value, _ := reflect.Select(cases)
 
@@ -32,17 +36,21 @@ func Process0cPkg(frame model.FrameDict) {
 			info := (value.Interface().(*model.View_page_regist_info))
 			if -1 == regist_view_chan(&frame, info) {
 				delete(pkg, info.View_chan)
+				// todo should remove this view_chan from cases
+				cases = cases[:3]
 			}
 		case 1: // time
 			// to be deleted, simulate net receiver
 			//frame.Frame_type.NetChanFrame <- "hello world"
 		case 2: // net frame
 			// update when receive net data
-			hello := (value.Interface()).(string)
+			msg := (value.Interface()).(string)
 
-			v := make(map[int]string)
-			for j := 0; j < len(frame.ParaList); j++ {
-				v[j] = fmt.Sprintf(",%d,%s%d,%s%d;", i, frame.Frame_type.MissionID, i, hello, i)
+			// todo zcy do this function
+			v, err := get_param_array_from_frame(i, &frame, msg)
+			if err != nil {
+				e++
+				continue
 			}
 
 			var buffer bytes.Buffer
@@ -65,6 +73,56 @@ func Process0cPkg(frame model.FrameDict) {
 			cases = append(cases[:chose], cases[chose+1:]...)
 		}
 	}
+}
+
+// zcy do this
+// input hello:
+// #<DATA_TYPE>_<MISSIONID>_<SubAddress>_<DataFormat>\t<station>\t<FrameNo>\t<GroundTime>
+// RTM_TGTH_PK-CEH2_Result  00  0   00:00:03.3345
+// #<DataItemID> <DataItemCode> <DataItemResult>;...
+// 1 00000000 0.000;2 00000000 0.000;33 ee 238;
+// output v:
+// v[j]:",<DataItemCode>,<DataItemResult>,<Description>,<-1:out of limit;0:normal";
+// ,00000000,0.000,正常,0;,00000000,0.000,异常,-1;,ee,238,正确,0;
+func get_param_array_from_frame(i int, frame *model.FrameDict, msg string) (v map[int]string, err error) {
+	err = nil
+	v = make(map[int]string)
+
+	lines := strings.Split(msg, "\n")
+	if len(lines) <= 1 {
+		err = errors.New("msg has no param line")
+		return nil, err
+	}
+	params := strings.Split(lines[1], ";")
+	if len(params) <= 0 {
+		err = errors.New("msg has no params")
+		return nil, err
+	}
+
+	j := 0
+	for _, x := range params {
+		p := strings.Split(x, " ")
+		if len(p) < 3 {
+			continue
+		}
+
+		// p[0]:id, p[1]: code, p[2]: result
+		id, _ := strconv.Atoi(p[0])
+		for j < len(frame.ParaList) && frame.ParaList[j].ID < id {
+			j++
+		}
+		for j < len(frame.ParaList) && frame.ParaList[j].ID == id {
+			// begin --------------------
+			// zcy do this section
+			// from p to v[j]
+			// this is just for test; for example: 0 should be -1 if out of limit
+			v[j] = fmt.Sprintf(",%s,%s,%s%d,0;", p[1], p[2], frame.Frame_type.MissionID, i)
+			// end ------------------------
+			j++
+		}
+	}
+
+	return v, err
 }
 
 // return 0: not changed; 1: new regist; -1: unregist
