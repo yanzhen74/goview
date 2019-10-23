@@ -15,10 +15,9 @@ import (
 )
 
 // map from para index of frame to para index of view
-var para_view_map map[*websocket.NSConn]map[int]string
 
 func Process0cPkg(frame model.FrameDict) {
-	para_view_map = make(map[*websocket.NSConn]map[int]string)
+	para_view_map := make(map[*websocket.NSConn]map[int]string)
 
 	// pkg should send only required parameters to view's chan
 	var pkg map[chan string]interface{} = make(map[chan string]interface{})
@@ -34,7 +33,7 @@ func Process0cPkg(frame model.FrameDict) {
 		switch chose {
 		case 0: // regist/unregist chan_view
 			info := (value.Interface().(*model.View_page_regist_info))
-			if -1 == regist_view_chan(&frame, info) {
+			if -1 == regist_view_chan(&frame, info, para_view_map) {
 				delete(pkg, info.View_chan)
 				// todo should remove this view_chan from cases
 				cases = cases[:3]
@@ -57,8 +56,11 @@ func Process0cPkg(frame model.FrameDict) {
 			for conn, view_chan := range frame.Frame_type.UserChanMap {
 				buffer.Reset()
 				for id_in_frame, id_in_view := range para_view_map[conn] {
-					buffer.WriteString(id_in_view)
-					buffer.WriteString(v[id_in_frame])
+					// if param not in this frame
+					if value, ok := v[id_in_frame]; ok {
+						buffer.WriteString(id_in_view)
+						buffer.WriteString(value)
+					}
 				}
 				pkg[view_chan] = buffer.String()
 			}
@@ -82,7 +84,7 @@ func Process0cPkg(frame model.FrameDict) {
 // #<DataItemID> <DataItemCode> <DataItemResult>;...
 // 1 00000000 0.000;2 00000000 0.000;33 ee 238;
 // output v:
-// v[j]:",<DataItemCode>,<DataItemResult>,<Description>,<-1:out of limit;0:normal";
+// v[j]:",<DataItemCode>,<DataItemResult>,<Description>,<-1:out of limit;0:normal>;";
 // ,00000000,0.000,正常,0;,00000000,0.000,异常,-1;,ee,238,正确,0;
 func get_param_array_from_frame(i int, frame *model.FrameDict, msg string) (v map[int]string, err error) {
 	err = nil
@@ -126,7 +128,7 @@ func get_param_array_from_frame(i int, frame *model.FrameDict, msg string) (v ma
 }
 
 // return 0: not changed; 1: new regist; -1: unregist
-func regist_view_chan(frame *model.FrameDict, info *model.View_page_regist_info) int {
+func regist_view_chan(frame *model.FrameDict, info *model.View_page_regist_info, para_view_map map[*websocket.NSConn]map[int]string) int {
 	if info.Action == 1 {
 		// regist only required parameters for view
 		para_view_map[info.Conn] = make(map[int]string)
@@ -208,6 +210,10 @@ func send_to_view(
 	// 每个消费者，发送一次后必须删除
 	for _, item := range user_chan_view_map {
 		send_value := send_value_map[item]
+		// 空字符串不发送
+		if send_value.(string) == "" {
+			continue
+		}
 		selectcase := reflect.SelectCase{
 			Dir:  reflect.SelectSend,
 			Chan: reflect.ValueOf(item),

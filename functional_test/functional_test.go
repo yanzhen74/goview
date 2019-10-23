@@ -73,9 +73,9 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 			So(frame, ShouldNotBeNil)
 
 			// total 10 seconds
-			for i := 0; i < 50; i++ {
+			for i := 0; i < 100; i++ {
 				simu_send_kafka(p, i)
-				time.Sleep(time.Millisecond * 200)
+				time.Sleep(time.Millisecond * 100)
 			}
 		})
 
