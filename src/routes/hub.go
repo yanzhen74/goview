@@ -17,6 +17,7 @@ func Hub(app *iris.Application) {
 
 	HomeHub(main)
 	TabHub(main)
+	WebsocketHub(main)
 }
 
 func corsSetting(app *iris.Application) (main iris.Party) {

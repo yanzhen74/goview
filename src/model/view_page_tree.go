@@ -15,60 +15,58 @@ type View_page_tree struct {
 	Isleaf   bool
 }
 
-var pid = 0
+var page_id = 0
 
 func Init_pages(dir string) (data View_page_tree, err error) {
-	//dir, _ = filepath.Abs(dir)
 	//判断文件或目录是否存在
-	file, err := os.Stat(dir)
+	dirInfo, err := os.Stat(dir)
 	if err != nil {
 		return data, err
 	}
+
 	data = View_page_tree{}
 
-	//如果不是目录，直接返回文件信息
-	if !file.IsDir() {
-		data.Curdir = path.Dir(dir)
-		data.Curname = file.Name()
+	//直接返回文件信息
+	if !dirInfo.IsDir() {
+		data.Curdir = dir
+		data.Curname = dirInfo.Name()
 		data.Isleaf = true
-		data.Id = string(pid)
-		pid += 1
-		return data, err
-	}
-	fileInfo, err := ioutil.ReadDir(dir)
-	if err != nil {
-		fmt.Println(fileInfo)
+		data.Id = string(page_id)
+		page_id += 1
 		return data, err
 	}
 
-	//目录为空
-	if len(fileInfo) == 0 {
-		return
+	// 获取目录包含的子目录和文件信息
+	subInfos, err := ioutil.ReadDir(dir)
+	if err != nil || len(subInfos) == 0 {
+		fmt.Println(subInfos)
+		return data, err
 	}
 
+	// 本目录信息
 	data.Curdir = dir
 	_, data.Curname = path.Split(dir)
 	data.Isleaf = false
-	data.Id = string(pid)
-	pid += 1
+	data.Id = string(page_id)
+	page_id += 1
 
-	for _, v := range fileInfo {
+	// 子目录及文件信息
+	for _, v := range subInfos {
 		if v.IsDir() {
 			if subDir, err := Init_pages(dir + "/" + v.Name()); err != nil {
 				return data, err
+			} else if subDir.Id == "" {
+				continue
 			} else {
 				data.Branches = append(data.Branches, subDir)
-				data.Isleaf = false
-				data.Id = string(pid)
-				pid += 1
 			}
 		} else {
 			f := View_page_tree{}
-			f.Curname = v.Name()
 			f.Curdir = dir + "/" + v.Name()
+			f.Curname = v.Name()
 			f.Isleaf = true
-			f.Id = string(pid)
-			pid += 1
+			f.Id = string(page_id)
+			page_id += 1
 			data.Branches = append(data.Branches, f)
 		}
 	}

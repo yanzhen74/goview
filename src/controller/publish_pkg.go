@@ -7,7 +7,7 @@ import (
 	"github.com/kataras/iris/websocket"
 )
 
-func publishPkg(nsConn *websocket.NSConn,
+func PublishPkg(nsConn *websocket.NSConn,
 	msg websocket.Message, view_chan chan string) error {
 
 	for i := 0; ; /*i < 100*/ i++ {

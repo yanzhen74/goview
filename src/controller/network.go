@@ -1,15 +1,23 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/yanzhen74/goview/src/model"
 	"github.com/yanzhen74/goview/src/net"
 )
 
 var netProcessers *[]*net.NetProcesser
 
-func Init_network(config *model.NetWorks) bool {
+func Init_network(conf string) bool {
+	// init net config
+	netConfig, err := model.Read_network_config(conf)
+	if err != nil {
+		fmt.Printf("error is %v", err)
+		return false
+	}
 	netProcessers = new([]*net.NetProcesser)
-	for _, n := range (*config).NetWorkList {
+	for _, n := range (*netConfig).NetWorkList {
 		netProcesser := net.GetNetProcesser(n.NetWorkProtocal)
 		ok, _ := (*netProcesser).Init(&n)
 		if ok == 1 {

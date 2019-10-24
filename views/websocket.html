@@ -15,6 +15,7 @@ at this example we registered the 'chat' -->
     var port=document.location.port?(":"+document.location.port):"";
     // see app.Get("/echo", ws.Handler()) on main.go
     var wsURL = scheme + "://" + document.location.hostname  + port + "/echo";
+    console.log(wsURL)
 
     function addMessage(msg) {
         output.insertAdjacentHTML('afterbegin', msg);
@@ -69,6 +70,13 @@ at this example we registered the 'chat' -->
                                 para.cells[3].innerHTML = results[1];
                                 para.cells[4].innerHTML = results[2];
                                 para.cells[6].innerHTML = results[3];
+                                if (results[4] ==-1){
+                                    para.style.backgroundColor="pink"
+                                }
+                                else {
+                                    para.style.backgroundColor="white"
+                                }
+                            
                             
                             }
                         }

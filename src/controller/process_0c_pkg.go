@@ -14,7 +14,20 @@ import (
 	"github.com/yanzhen74/goview/src/model"
 )
 
+// backend frame model
+var Dicts *[]model.FrameDict
+
 // map from para index of frame to para index of view
+
+func Init_0c_Processer(conf string) {
+	z, _ := model.Read_para_dict(conf)
+	Dicts = model.Get_frame_dict_list(z)
+
+	for _, d := range *Dicts {
+		Bind_network(d.Frame_type)
+		go Process0cPkg(d)
+	}
+}
 
 func Process0cPkg(frame model.FrameDict) {
 	para_view_map := make(map[*websocket.NSConn]map[int]string)
@@ -118,7 +131,7 @@ func get_param_array_from_frame(i int, frame *model.FrameDict, msg string) (v ma
 			// zcy do this section
 			// from p to v[j]
 			// this is just for test; for example: 0 should be -1 if out of limit
-			v[j] = fmt.Sprintf(",%s,%s,%s%d,0;", p[1], p[2], frame.Frame_type.MissionID, i)
+			v[j] = fmt.Sprintf(",%s,%s,%s%d,%d;", p[1], p[2], frame.Frame_type.MissionID, i, i%4-1)
 			// end ------------------------
 			j++
 		}

@@ -5,12 +5,17 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/hero"
-	"github.com/yanzhen74/goview/src/controller"
 	"github.com/yanzhen74/goview/src/model"
 )
 
+// frontend view page paras model
+var File_paras_map map[string]*model.Paras
+
 func TabHub(party iris.Party) {
 	tab := party.Party("/tab")
+
+	// map file and paras - left menu
+	File_paras_map = make(map[string]*model.Paras)
 
 	tab.Get("/{page:path}", hero.Handler(OpenTab))
 }
@@ -27,7 +32,7 @@ func OpenTab(ctx iris.Context) {
 	}
 
 	// for websocket to use paras
-	controller.File_paras_map[paras.File] = paras
+	File_paras_map[paras.File] = paras
 
 	// show table of paras
 	ctx.ViewData("paras", paras)

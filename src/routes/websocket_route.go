@@ -1,10 +1,11 @@
-package controller
+package routes
 
 import (
 	"log"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/websocket"
+	"github.com/yanzhen74/goview/src/controller"
 	"github.com/yanzhen74/goview/src/model"
 )
 
@@ -13,17 +14,11 @@ const namespace = "default"
 // map nsConn to info
 var conn_info_map map[*websocket.NSConn]*model.View_page_regist_info
 
-// frontend view page paras model
-var File_paras_map map[string]*model.Paras
-
-// backend frame model
-var Dicts *[]model.FrameDict
-
 func regist_info(nsConn *websocket.NSConn, action int) {
 	info := conn_info_map[nsConn]
 	info.Set_action(action)
 	for _, i := range *(info.View_dict) {
-		for _, d := range *Dicts {
+		for _, d := range *controller.Dicts {
 			if d.Frame_type.MissionID == (*i).View_type.MissionID &&
 				d.Frame_type.DataType == (*i).View_type.DataType &&
 				d.Frame_type.PayloadName == (*i).View_type.PayloadName &&
@@ -78,18 +73,20 @@ var serverEvents = websocket.Namespaces{
 			// regist info
 			regist_info(nsConn, 1)
 
-			go publishPkg(nsConn, msg, view_chan)
+			go controller.PublishPkg(nsConn, msg, view_chan)
 
 			// Write message back to the client message owner with:
 			// nsConn.Emit("chat", msg)
 			// Write message to all except this client with:
-			nsConn.Conn.Server().Broadcast(nsConn, msg)
+			// nsConn.Conn.Server().Broadcast(nsConn, msg)
 			return nil
 		},
 	},
 }
 
-func SetupWebsocket(app *iris.Application) {
+func WebsocketHub(party iris.Party) {
+	web := party.Party("/echo")
+
 	// create our websocket server
 	// Almost all features of neffos are disabled because no custom message can pass
 	// when app expects to accept and send only raw websocket native messages.
@@ -113,7 +110,8 @@ func SetupWebsocket(app *iris.Application) {
 	// register the server on an endpoint.
 	// see the inline javascript code in the websockets.html,
 	// this endpoint is used to connect to the server.
-	app.Get("/echo", websocket.Handler(ws))
+	web.Get("/", websocket.Handler(ws)) // websocket模块
+	//app.Get("/echo", websocket.Handler(ws))
 	// serve the javascript built'n client-side library,
 	// see websockets.html script tags, this path is used.
 	// app.Any("/iris-ws.js", websocket.ClientHandler())
