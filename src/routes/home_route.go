@@ -17,6 +17,8 @@ func HomeHub(party iris.Party) {
 	}
 
 	home.Get("/", func(ctx iris.Context) { // 首页模块
+		//username, password, _ := ctx.Request().BasicAuth()
+		//log.Printf("%s, %s\n", username, password)
 		ctx.ViewData("menu", pages)
 		ctx.View("index.html")
 	})

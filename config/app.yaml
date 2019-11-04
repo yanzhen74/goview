@@ -2,7 +2,7 @@
 #自定义配置
 Other:
   Port: 8080
-  IgnoreURLs: [/, /home, /user/login, /user/registe, /login_pwd]
+  IgnoreURLs: [/home, /user/login, /user/registe, /login_pwd, /tab, /echo]
   JWTTimeout: 900 #second
   LogLevel: debug
   Secret: xxx-Secret

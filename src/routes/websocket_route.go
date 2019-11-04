@@ -2,6 +2,7 @@ package routes
 
 import (
 	"log"
+	"sync"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/websocket"
@@ -12,7 +13,10 @@ import (
 const namespace = "default"
 
 // map nsConn to info
-var conn_info_map map[*websocket.NSConn]*model.View_page_regist_info
+var (
+	conn_info_map map[*websocket.NSConn]*model.View_page_regist_info
+	lock          sync.Mutex
+)
 
 func regist_info(nsConn *websocket.NSConn, action int) {
 	info := conn_info_map[nsConn]
@@ -67,7 +71,9 @@ var serverEvents = websocket.Namespaces{
 			info := model.Get_view_page_regist_info(paras, view_chan)
 
 			// bind nsConn to info, for unregist it when close
+			lock.Lock()
 			conn_info_map[nsConn] = info
+			lock.Unlock()
 			info.Conn = nsConn
 
 			// regist info

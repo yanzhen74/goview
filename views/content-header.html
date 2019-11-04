@@ -1,9 +1,64 @@
 {{ define "content-header" }}
         <div class="layui-logo">POAC综合监显</div>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item">
+            <li class="layui-nav-item" id="login">
                 欢迎光临
             </li>
-            <li class="layui-nav-item"><a href="">安全退出</a></li>
+            <li class="layui-nav-item" id="logout">安全退出</li>
+            <script>
+                layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){                   var btn = document.getElementById("logout");  
+               var $ = layui.$;
+                 var login = document.getElementById("login"); 
+                login.onclick =function(){  
+                    $.ajax({
+                        type: 'GET', // 获取头信息，type=HEAD即可
+                        crossDomain: true,
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        url : window.location.href,
+                        complete: function( xhr,data ){
+                            // 获取相关Http Response header
+                            var authorization = xhr.getResponseHeader("Authorization");
+                            // 在这里，做想做的事。。。
+                            console.log(authorization);
+                            var items = authorization.split(" ")
+                            // items[1] is token
+                            window.localStorage.setItem('token', items[1]);
+                            var headers = xhr.getAllResponseHeaders();//返回全部头信息,string
+                            console.log(headers)
+                        }
+                    });
+                    // $.ajax({
+                        // type: "POST",
+                        // url: "/user/login",
+                        // success: function(data) {
+                        //    console.log(data);
+                        // },
+                    // });
+                };
+                var logout = document.getElementById("logout"); 
+                logout.onclick =function(){  
+                    $.ajax({
+                        type: "GET",
+                        url: "/user/logout",
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        success: function(data) {
+                            console.log(data);
+                        },
+                        beforeSend: function(xhr) {
+                            token = window.localStorage.getItem('token');
+                            console.log("token is %s", token);
+                            if (token){
+                                xhr.setRequestHeader("Authorization", "Bearer " + token);
+                            }
+                        }
+                    });
+                };
+                return false;
+            });
+            </script>
         </ul>
 {{end}}

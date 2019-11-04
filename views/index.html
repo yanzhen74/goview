@@ -3,6 +3,7 @@
 <head>
     <title>goview</title>
     {{ template "header" }}
+    <script src="/public/layui/layui.js"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -19,12 +20,11 @@
         {{ template "content-tab" .}}
     </div>
 
-<div class="layui-footer" style="text-align:center;">
-    <!-- 底部固定区域 -->
-    {{ template "footer" .}}
+    <div class="layui-footer" style="text-align:center;">
+        <!-- 底部固定区域 -->
+        {{ template "footer" .}}
+    </div>
 </div>
-</div>
-<script src="/public/layui/layui.js"></script>
 <script>
     {{ template "view_tree_data" .menu }}
     {{ template "build_tree" .menu }}

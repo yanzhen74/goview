@@ -1,14 +1,12 @@
-package test
+package model
 
 import (
 	"fmt"
 	"testing"
-
-	"github.com/yanzhen74/goview/src/model"
 )
 
 func Test_read_para_dict(t *testing.T) {
-	z, err := model.Read_para_dict("../config/conf/ParameterDictionary.xml")
+	z, err := Read_para_dict("../../config/conf/ParameterDictionary.xml")
 	if err != nil {
 		fmt.Printf("error %v", err)
 	}

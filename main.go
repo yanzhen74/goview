@@ -7,6 +7,7 @@ import (
 	"github.com/yanzhen74/goview/src/routes"
 )
 
+/*
 type ShipPackage struct {
 	Name     string
 	Children []ShipPackage
@@ -15,6 +16,7 @@ type Menu struct {
 	UserName string
 	Items    []ShipPackage
 }
+*/
 
 func main() {
 	app := iris.New()

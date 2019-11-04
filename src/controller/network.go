@@ -3,11 +3,11 @@ package controller
 import (
 	"fmt"
 
+	"github.com/yanzhen74/goview/src/goviewnet"
 	"github.com/yanzhen74/goview/src/model"
-	"github.com/yanzhen74/goview/src/net"
 )
 
-var netProcessers *[]*net.NetProcesser
+var netProcessers *[]*goviewnet.NetProcesser
 
 func Init_network(conf string) bool {
 	// init net config
@@ -16,9 +16,9 @@ func Init_network(conf string) bool {
 		fmt.Printf("error is %v", err)
 		return false
 	}
-	netProcessers = new([]*net.NetProcesser)
+	netProcessers = new([]*goviewnet.NetProcesser)
 	for _, n := range (*netConfig).NetWorkList {
-		netProcesser := net.GetNetProcesser(n.NetWorkProtocal)
+		netProcesser := goviewnet.GetNetProcesser(n.NetWorkProtocal)
 		ok, _ := (*netProcesser).Init(&n)
 		if ok == 1 {
 			*netProcessers = append(*netProcessers, netProcesser)

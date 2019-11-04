@@ -1,4 +1,4 @@
-package net
+package goviewnet
 
 import (
 	"github.com/yanzhen74/goview/src/model"

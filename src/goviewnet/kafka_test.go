@@ -1,4 +1,4 @@
-package test
+package goviewnet
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func Test_consumer(t *testing.T) {
 
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
-	config.Version = sarama.V0_11_0_2
+	config.Version = sarama.V0_10_2_1
 
 	// consumer
 	consumer, err := sarama.NewConsumer([]string{"10.211.55.2:9092"}, config)

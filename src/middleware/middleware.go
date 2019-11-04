@@ -5,6 +5,7 @@ import (
 
 	"github.com/kataras/iris/context"
 	"github.com/yanzhen74/goview/src/inits/parse"
+	"github.com/yanzhen74/goview/src/middleware/jwts"
 )
 
 type Middleware struct {
@@ -13,8 +14,12 @@ type Middleware struct {
 func ServeHTTP(ctx context.Context) {
 	path := ctx.Path()
 	// 过滤静态资源、login接口、首页等...不需要验证
-	if checkURL(path) || strings.Contains(path, "/static2") {
+	if checkURL(path) || strings.Contains(path, "/static2") || strings.Contains(path, "echo") || strings.Contains(path, "tab") {
 		ctx.Next()
+		return
+	}
+
+	if !jwts.Serve(ctx) {
 		return
 	}
 

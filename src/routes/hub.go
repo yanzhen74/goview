@@ -16,6 +16,7 @@ func Hub(app *iris.Application) {
 	var main = corsSetting(app)
 
 	HomeHub(main)
+	UserHub(main)
 	TabHub(main)
 	WebsocketHub(main)
 }

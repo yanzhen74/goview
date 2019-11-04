@@ -1,14 +1,11 @@
-package test
+package functional
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/Shopify/sarama"
 	"github.com/sayems/golang.webdriver/selenium/pages"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tebeka/selenium"
@@ -35,7 +32,7 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 		Convey(` Edith want to look the telemetry data from spacecraft,
 			she has heard about a cool new online goview app.
 			She goes to check out its homepage `, func() {
-			err = browser.Get("http://127.0.0.1:8080/")
+			err = browser.Get("http://guest:guest@127.0.0.1:8080/")
 			So(err == nil, ShouldBeTrue)
 		})
 
@@ -88,41 +85,4 @@ func Test_can_start_a_table_and_see_it_later(t *testing.T) {
 	})
 
 	browser.Quit()
-}
-
-func simu_init_kafka() (p sarama.SyncProducer) {
-
-	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true
-	config.Producer.Timeout = 5 * time.Second
-	p, err := sarama.NewSyncProducer([]string{"10.211.55.2:9092"}, config)
-	if err != nil {
-		log.Printf("sarama.NewSyncProducer err, message=%s \n", err)
-		return nil
-	}
-
-	return p
-}
-
-func simu_send_kafka(p sarama.SyncProducer, i int) {
-	topic := "RTM"
-	srcValue0 := "RTM_XJYH_PK-CEH2_Result\t.\tindex=%d\n1 aa 233;2 bb 55;3 00000000 53.78;4 39a8 %d;5 55aa %d"
-	srcValue1 := "RTM_WYG_PK-CEH2_Result\t.\tindex=%d\n1 11 233;2 22 55;3 33 53.78;4 22cc %d;5 ffee %d"
-	var value string
-	if i%2 == 0 {
-		value = fmt.Sprintf(srcValue0, i, i, i)
-	} else {
-		value = fmt.Sprintf(srcValue1, i, i, i)
-	}
-
-	msg := &sarama.ProducerMessage{
-		Topic: topic,
-		Value: sarama.ByteEncoder(value),
-	}
-	part, offset, err := p.SendMessage(msg)
-	if err != nil {
-		log.Printf("send message(%s) err=%s \n", value, err)
-	} else {
-		fmt.Fprintf(os.Stdout, value+"发送成功，partition=%d, offset=%d \n", part, offset)
-	}
 }

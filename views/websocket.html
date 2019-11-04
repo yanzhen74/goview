@@ -67,14 +67,14 @@ at this example we registered the 'chat' -->
                                 // select param by index
                                 para = document.getElementById(results[0])
 
-                                para.cells[3].innerHTML = results[1];
+                                para.cells[3].innerHTML = '<div style="width:200px;word-wrap:break-word;">' + results[1] + '</div>';
                                 para.cells[4].innerHTML = results[2];
                                 para.cells[6].innerHTML = results[3];
                                 if (results[4] ==-1){
-                                    para.style.backgroundColor="pink"
+                                    para.style.foregroundColor="pink"
                                 }
                                 else {
-                                    para.style.backgroundColor="white"
+                                    para.style.foregroundColor="white"
                                 }
                             
                             

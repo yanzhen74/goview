@@ -61,7 +61,7 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
                     //如果比零小，则直接打开新的tab项
                     active.tabAdd(dataid["data_url"], dataid["data_id"], dataid["data_title"]);
                 } else {
-                    //否则判断该tab项是否以及存在
+                    //否则判断该tab项是否已经存在
                     var isData = false; //初始化一个标志，为false说明未打开该tab项 为true则说明已有
                     $.each($(".layui-tab-title li[lay-id]"), function () {
                         //如果点击左侧菜单栏所传入的id 在右侧tab项中的lay-id属性可以找到，则说明该tab项已经打开
