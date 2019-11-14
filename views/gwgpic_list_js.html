@@ -1,0 +1,68 @@
+{{ define "gwgpic_list_js" }}
+<script>
+layui.use(['table', 'jquery'], function(){
+
+    var $ = layui.$
+    function tdTitle(){
+        $('th').each(function(index,element){
+            $(element).attr('title',$(element).text());
+        });
+        $('td').each(function(index,element){
+            $(element).attr('title',$(element).text());
+        });
+    };
+
+    window.search = function () {
+        var $ = layui.$
+        var table = layui.table;
+        var codeLike=$('#codeLike').val();//模糊查询条件
+        //展示已知数据
+        table.render({
+            elem: '#tableData' //指定table容器
+            ,url: '/gwgpic/list.dd' //数据接口
+            //,method:'post'
+            ,where:{codeLike:codeLike} //额外参数
+            ,even: true //开启隔行背景
+            ,parseData: function(res) {
+                var len = res.data.length;
+                for (x=0; x<len; x++) {
+                    res.data[x].Url = "<a href=" + res.data[x].Url + ">" + res.data[x].Url + "</a>";
+                }
+                return {
+                    "code": 0, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.total, //解析数据长度
+                    "data": res.data //解析数据列表
+                    };
+            }
+            ,cols: [[ //表头
+                {field: 'Id', title: '编号'}
+                ,{field: 'Camera', title: '相机'}
+                ,{field: 'Url', title: '链接'}
+                ,{field: 'Size', title: '大小'}
+                ,{field: 'ImageNo', title: '序号'}
+                ,{field: 'Time', title: '拍摄时间'}
+                ,{field: 'CreatedAt', title: '创建时间'}
+                ,{title: '操作',toolbar: '#tools'}
+            ]]
+            ,page:{
+                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                ,groups: 6 //只显示 1 个连续页码
+            }
+            ,done:function(res){
+                tdTitle();
+                $("table").css("width", "100%");   
+            }
+        });
+    }
+
+    $(function () {
+        search();
+    });
+
+    $(document).on('click','#search',function(){ 
+        search()
+    });
+});
+</script>
+{{ end }}

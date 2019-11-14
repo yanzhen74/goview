@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ROOT>
-    <NetWork NetWorkSeqNum="1" NetWorkName="RTM" NetWorkIP="10.211.55.2:9092" NetWorkkPort="STANDBY_RT" NetWorkSpecification="实时遥测" NetWorkProtocal="kafka" DataType="data"/>
+    <NetWork NetWorkSeqNum="1" NetWorkName="RTM" NetWorkIP="10.211.55.2:9092" NetWorkPort="STANDBY_RT" NetWorkSpecification="实时遥测" NetWorkProtocal="kafka" DataType="data"/>
+    <NetWork NetWorkSeqNum="2" NetWorkName="GWG" NetWorkIP="10.211.55.2:9092" NetWorkPort="GWG_IMG" NetWorkSpecification="车载探头图像" NetWorkProtocal="kafka_gwg" DataType="data"/>
 </ROOT>

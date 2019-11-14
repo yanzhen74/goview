@@ -3,29 +3,22 @@ package main
 import (
 	"github.com/kataras/iris"
 	"github.com/yanzhen74/goview/src/controller"
+	"github.com/yanzhen74/goview/src/goviewdb"
 	"github.com/yanzhen74/goview/src/inits/parse"
 	"github.com/yanzhen74/goview/src/routes"
 )
 
-/*
-type ShipPackage struct {
-	Name     string
-	Children []ShipPackage
-}
-type Menu struct {
-	UserName string
-	Items    []ShipPackage
-}
-*/
-
 func main() {
 	app := iris.New()
 
-	parse.AppOtherParse()
+	goviewdb.GwgDb = goviewdb.NewGWGDb("./db/gwg.db")
+
+	parse.AppConfigParse()
 	routes.Hub(app)
 
 	app.HandleDir("/public", "./public")
 	app.HandleDir("/config", "./config")
+	app.HandleDir("/data", "./data")
 	// 模板引擎采用html/template
 	tmpl := iris.HTML("./views", ".html")
 
@@ -42,5 +35,6 @@ func main() {
 	// Receive network data
 	controller.Run_network()
 
-	app.Run(iris.Addr(":"+parse.O.Other.Port), iris.WithoutServerError(iris.ErrServerClosed))
+	// app.Run(iris.Addr(":"+parse.O.Other.Port), iris.WithoutServerError(iris.ErrServerClosed))
+	app.Run(iris.Addr(":"+parse.AppConfig.Port), iris.WithConfiguration(iris.YAML("config/iris.yaml")))
 }

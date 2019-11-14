@@ -6,9 +6,10 @@ import (
 
 const (
 	// key定义
-	CODE string = "code"
-	MSG  string = "msg"
-	DATA string = "data"
+	CODE  string = "code"
+	MSG   string = "msg"
+	TOTLE string = "total"
+	DATA  string = "data"
 
 	// msg define
 	Success                  = "恭喜, 成功"
@@ -58,6 +59,16 @@ func Ok(ctx iris.Context, msg string, data interface{}) {
 		CODE: iris.StatusOK,
 		MSG:  msg,
 		DATA: data,
+	})
+}
+
+func Ok_page(ctx iris.Context, msg string, page int, data interface{}) {
+	ctx.StatusCode(iris.StatusOK)
+	ctx.JSON(iris.Map{
+		CODE:  iris.StatusOK,
+		MSG:   msg,
+		TOTLE: page,
+		DATA:  data,
 	})
 }
 

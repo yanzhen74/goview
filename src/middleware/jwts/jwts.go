@@ -282,7 +282,7 @@ func ConfigJWT() {
 		//这个方法将验证jwt的token
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			//自己加密的秘钥或者说盐值
-			return []byte(parse.O.Other.Secret), nil
+			return []byte(parse.AppConfig.Secret), nil
 		},
 		//设置后，中间件会验证令牌是否使用特定的签名算法进行签名
 		//如果签名方法不是常量，则可以使用ValidationKeyGetter回调来实现其他检查
@@ -316,7 +316,7 @@ type Claims struct {
 // 在登录成功的时候生成token
 func GenerateToken(user *model.User) (string, error) {
 	//expireTime := time.Now().Add(60 * time.Second)
-	expireTime := time.Now().Add(time.Duration(parse.O.Other.JWTTimeout) * time.Second)
+	expireTime := time.Now().Add(time.Duration(parse.AppConfig.JWTTimeout) * time.Second)
 
 	claims := Claims{
 		user.Id,
@@ -340,6 +340,6 @@ func GenerateToken(user *model.User) (string, error) {
 	//	"exp":       time.Now().Add(10 * time.Hour * time.Duration(1)).Unix(),
 	//})
 
-	token, err := tokenClaims.SignedString([]byte(parse.O.Other.Secret))
+	token, err := tokenClaims.SignedString([]byte(parse.AppConfig.Secret))
 	return token, err
 }

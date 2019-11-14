@@ -11,13 +11,10 @@ import (
 
 var (
 	// 解析app.yml中的Other项
-	O Other
+	AppConfig appConfig
 )
 
-type Other struct {
-	Other Inner `yaml:"Other"`
-}
-type Inner struct {
+type appConfig struct {
 	Port       string   `yaml:"Port"`
 	IgnoreURLs []string `yaml:"IgnoreURLs"`
 	JWTTimeout int64    `yaml:"JWTTimeout"`
@@ -25,7 +22,7 @@ type Inner struct {
 	Secret     string   `yaml:"Secret"`
 }
 
-func AppOtherParse() {
+func AppConfigParse() {
 	golog.Info("@@@ Init app conf")
 	//c := iris.YAML("conf/app.yml")
 
@@ -36,7 +33,7 @@ func AppOtherParse() {
 	if err != nil {
 		golog.Fatalf("Error. %s", err)
 	}
-	if err = yaml.Unmarshal([]byte(appData), &O); err != nil {
+	if err = yaml.Unmarshal([]byte(appData), &AppConfig); err != nil {
 		golog.Fatalf("Error. %s", err)
 	}
 

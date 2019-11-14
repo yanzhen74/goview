@@ -98,7 +98,8 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
         }
     };
     function FrameWH() {
-        var h = $(window).height();
+        var h = $(window).innerHeight() - $(".layui-footer").height() 
+            - $(".layui-header").height() - $(".layui-tab-title").height();
         $("iframe").css("height",h+"px");
     }
 });

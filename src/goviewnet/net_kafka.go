@@ -22,31 +22,7 @@ type NetKafka struct {
 func (this *NetKafka) Init(config *model.NetWork) (int, error) {
 	fmt.Printf("init kafka network")
 
-	conf := sarama.NewConfig()
-	conf.Consumer.Return.Errors = true
-	conf.Version = sarama.V0_10_2_1
-	conf.Consumer.MaxWaitTime = time.Duration(30) * time.Millisecond
-
-	// consumer
-	consumer, err := sarama.NewConsumer([]string{config.NetWorkIP}, conf)
-	if err != nil {
-		fmt.Printf("consumer kafka create error %s\n", err.Error())
-		return -1, err
-	}
-
-	partition_consumer, err := consumer.ConsumePartition(config.NetWorkName, 0, sarama.OffsetNewest)
-	if err != nil {
-		fmt.Printf("try create partition_consumer error %s\n", err.Error())
-		return -1, err
-	}
-
-	this.name = config.NetWorkName
-	this.config = conf
-	this.consumer = consumer
-	this.partition_consumer = partition_consumer
-	this.subscribers = make(map[string]*[]*model.FrameType)
-
-	return 1, nil
+	return init_kafka(this, config)
 }
 
 func (this *NetKafka) Subscribe(sub *model.FrameType) {

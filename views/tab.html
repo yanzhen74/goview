@@ -2,12 +2,13 @@
 <html lang="en">
     <head>
         <title>{{ .paras.File }}</title>
-        <link rel="stylesheet" href="/public/layui/css/layui.css" />
+        <script src="/public/layui/layui.js"></script>
+        <link rel="stylesheet" href="/public/layui/css/layui.css" media="all">
         <script type="text/javascript" src="/public/scripts/neffos.js"></script>
     </head>
     <body>
         {{ template "websocket" .}}
-        <table class="layui-table" lay-size="sm">
+        <table id="para_table" class="layui-table" lay-size="sm" lay-filter="para_table">
             <colgroup>
                 <col width="150">
                 <col width="200">
@@ -15,13 +16,13 @@
             </colgroup>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Key</th>
-                    <th>名称</th>
-                    <th>原始值</th>
-                    <th>结果值</th>
-                    <th>单位</th>
-                    <th>意义</th>
+                    <th lay-data="{field:'ID', width:100, unresize:false}">ID</th>
+                    <th lay-data="{field:'ParaKey', width:100, sort:true}">Key</th>
+                    <th lay-data="{field:'Name', width:200}">名称</th>
+                    <th lay-data="{field:'Raw', width:100}">原始值</th>
+                    <th lay-data="{field:'Result', width:5, unresize:false}">结果值</th>
+                    <th lay-data="{field:'Unit', width:100}">单位</th>
+                    <th lay-data="{field:'Description'}">意义</th>
                 </tr> 
             </thead>
             <tbody>
@@ -43,20 +44,55 @@
             </tbody>
         </table>
     </body>
+    <script type="text/javascript">
+        var tTD; //用来存储当前更改宽度的Table Cell,避免快速移动鼠标的问题 
+        var table = document.getElementById("para_table");
+        for (j = 0; j < table.rows[0].cells.length; j++) {
+            table.rows[0].cells[j].onmousedown = function () {
+                //记录单元格 
+                tTD = this;
+                if (event.offsetX > tTD.offsetWidth - 10) {
+                    tTD.mouseDown = true;
+                    tTD.oldX = event.x;
+                    tTD.oldWidth = tTD.offsetWidth;
+                }
+                //记录Table宽度 
+                //table = tTD; while (table.tagName != ‘TABLE') table = table.parentElement; 
+                //tTD.tableWidth = table.offsetWidth; 
+            };
+            table.rows[0].cells[j].onmouseup = function () {
+                //结束宽度调整 
+                if (tTD == undefined) tTD = this;
+                tTD.mouseDown = false;
+                tTD.style.cursor = 'default';
+            };
+            table.rows[0].cells[j].onmousemove = function () {
+                //更改鼠标样式 
+                if (event.offsetX > this.offsetWidth - 10)
+                    this.style.cursor = 'col-resize';
+                else
+                    this.style.cursor = 'default';
+                //取出暂存的Table Cell 
+                if (tTD == undefined) tTD = this;
+                //调整宽度 
+                if (tTD.mouseDown != null && tTD.mouseDown == true) {
+                    tTD.style.cursor = 'default';
+                    if (tTD.oldWidth + (event.x - tTD.oldX) > 0)
+                        tTD.width = tTD.oldWidth + (event.x - tTD.oldX);
+                    //调整列宽 
+                    tTD.style.width = tTD.width;
+                    tTD.style.cursor = 'col-resize';
+                    //调整该列中的每个Cell 
+                    table = tTD; while (table.tagName != 'TABLE') table = table.parentElement;
+                    for (j = 0; j < table.rows.length; j++) {
+                        table.rows[j].cells[tTD.cellIndex].width = tTD.width;
+                    }
+                    //调整整个表 
+                    //table.width = tTD.tableWidth + (tTD.offsetWidth – tTD.oldWidth); 
+                    //table.style.width = table.width; 
+                }
+            };
+        }
+    </script>
 
-<script>
-    document.getElementById("0").cells[3].innerHTML = "0xA0F0"
-    document.getElementById("1").cells[4].innerHTML = "535"
-    // timeOutAlert();
-    // function timeOutAlert(){
-    //     timeOut = window.setTimeout(function(){
-    //         console.log("time out..." + timeOut);
-
-    // // document.getElementById("0").cells[3].innerHTML = "0xA0F0"+timeOut;
-    // // document.getElementById("1").cells[4].innerHTML = "535"+timeOut;
-    //         if (timeOut < 100)
-    //             timeOutAlert();
-    //     },100);
-    // }     
-</script>
 </html>

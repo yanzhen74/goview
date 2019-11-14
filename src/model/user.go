@@ -3,9 +3,8 @@ package model
 import (
 	"time"
 
+	"github.com/yanzhen74/goview/src/goviewdb"
 	"github.com/yanzhen74/goview/src/supports"
-
-	"github.com/yanzhen74/goview/src/db"
 
 	"github.com/go-xorm/xorm"
 )
@@ -26,17 +25,17 @@ type User struct {
 }
 
 func CreateUser(user ...*User) (int64, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	return e.Insert(user)
 }
 
 func GetUserByUsername(user *User) (bool, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	return e.Get(user)
 }
 
 func GetUsersByUids(uids []int64, page *supports.Pagination) ([]*User, int64, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	users := make([]*User, 0)
 
 	s := e.In("id", uids).Limit(page.Limit, page.Start)
@@ -45,12 +44,12 @@ func GetUsersByUids(uids []int64, page *supports.Pagination) ([]*User, int64, er
 }
 
 func UpdateUserById(user *User) (int64, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	return e.Id(user.Id).Update(user)
 }
 
 func DeleteByUsers(uids []int64) (effect int64, err error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 
 	u := new(User)
 	for _, v := range uids {
@@ -63,7 +62,7 @@ func DeleteByUsers(uids []int64) (effect int64, err error) {
 
 func GetPaginationUsers(page *supports.Pagination) ([]*User, int64, error) {
 	var (
-		e        = db.MasterEngine()
+		e        = goviewdb.MasterEngine()
 		session  *xorm.Session
 		err      error
 		count    int64

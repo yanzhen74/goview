@@ -16,6 +16,7 @@ func Hub(app *iris.Application) {
 	var main = corsSetting(app)
 
 	HomeHub(main)
+	GwgPicHub(main)
 	UserHub(main)
 	TabHub(main)
 	WebsocketHub(main)
@@ -44,7 +45,7 @@ func corsSetting(app *iris.Application) (main iris.Party) {
 }
 
 func preSettring(app *iris.Application) {
-	app.Logger().SetLevel(parse.O.Other.LogLevel)
+	app.Logger().SetLevel(parse.AppConfig.LogLevel)
 	logger, close := supports.NewRequestLogger()
 	defer close()
 	app.Use(

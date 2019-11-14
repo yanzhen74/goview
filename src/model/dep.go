@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/yanzhen74/goview/src/db"
+	"github.com/yanzhen74/goview/src/goviewdb"
 )
 
 // 部门表
@@ -26,23 +26,23 @@ func GetAllDep() ([]*Dep, error) {
 		err     error
 		depList = make([]*Dep, 0)
 	)
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	err = e.SQL("SELECT * FROM dep").Find(&depList)
 	return depList, err
 }
 
 func CreateDep(deps ...*Dep) (int64, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	return e.Insert(deps)
 }
 
 func DelDepById(id int64) (int64, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	dep := new(Dep)
 	return e.Id(id).Delete(dep)
 }
 
 func UpdateDepById(dep *Dep) (int64, error) {
-	e := db.MasterEngine()
+	e := goviewdb.MasterEngine()
 	return e.Id(dep.Id).Update(dep)
 }
