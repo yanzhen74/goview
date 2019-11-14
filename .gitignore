@@ -18,9 +18,13 @@ __debug_bin
 # db
 *.sqlite3
 .DS_Store
+*.db
 
 # logs
 *.log
 goview
 
 *.jpeg
+
+# binary files
+*.a
