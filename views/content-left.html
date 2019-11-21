@@ -4,16 +4,22 @@
         <ul class="layui-nav layui-nav-tree" lay-filter="test">
             {{range .menu.Branches}}
              <li class="layui-nav-item">
-                <a class="" href="javascript:;">{{ .Curname }}</a>
+                <a  href="javascript:;">{{ .Curname }}</a>
                 <dl class="layui-nav-child">
                     <div id="{{ .Curname }}"></div>
                 </dl>
             </li>
             {{end}}
             <li class="layui-nav-item">
+                <a href="javascript:;">自定义视图</a>
+                <dl class="layui-nav-child">
+                    <div id="self-define-view"></div>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
                 <a href="javascript:;">系统管理</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="javascript:;" data_id="-3" data_title="新增页面" data_url="/tabadd" class="site_demo_active" data_type="tabAdd">新增页面</a>
+                    <dd><a href="javascript:;" data_id="-3" data_title="新增视图" data_url="/view" class="site_demo_active" data_type="tabAdd">新增视图</a>
                     </dd>
                     <dd><a href="javascript:;" data_id="-4" data_title="系统设置" data_url="/setup" class="site_demo_active" data_type="tabAdd">系统设置</a></dd>
                 </dl>
@@ -28,4 +34,30 @@
             </li>
         </ul>
     </div>
+{{end}}
+
+{{ define "right-click-menu"}}
+
+layui.config({base: '/public/layui_exts/mouseRightMenu/'})
+layui.use(['mouseRightMenu','layer','jquery'],function(){
+    var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
+    
+     //右键监听
+     $('.content').bind("contextmenu",function(e){
+        var data = {content:$(this).text()}
+         var menu_data=[
+            {'data':data,'type':1,'title':'右键操作1'},
+            {'data':data,'type':2,'title':'右键操作2'},
+            {'data':data,'type':3,'title':'右键操作3'},
+            {'data':data,'type':4,'title':'右键操作4'},
+            
+        ]
+         mouseRightMenu.open(menu_data,false,function(d){
+             layer.alert(JSON.stringify(d));
+         })
+        return false;
+    });
+        
+})
+
 {{end}}

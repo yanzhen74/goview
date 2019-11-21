@@ -47,7 +47,7 @@ func Init_pages(dir string) (data View_page_tree, err error) {
 	data.Curdir = dir
 	_, data.Curname = path.Split(dir)
 	data.Isleaf = false
-	data.Id = string(page_id)
+	data.Id = fmt.Sprintf("%d", page_id)
 	page_id += 1
 
 	// 子目录及文件信息
@@ -65,7 +65,7 @@ func Init_pages(dir string) (data View_page_tree, err error) {
 			f.Curdir = dir + "/" + v.Name()
 			f.Curname = v.Name()
 			f.Isleaf = true
-			f.Id = string(page_id)
+			f.Id = fmt.Sprintf("%d", page_id)
 			page_id += 1
 			data.Branches = append(data.Branches, f)
 		}

@@ -29,3 +29,12 @@
         menu.set({{ .Curname }}, data_tmp);
     {{ end }}
 {{ end }}
+
+
+{{ define "role_view_tree_data" }}
+    var role_menu = new Map();
+        var data_tmp = [
+            {{ template "loop" .}} 
+        ];
+        role_menu.set({{ .Curname }}, data_tmp);
+{{ end }}

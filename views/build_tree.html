@@ -1,3 +1,65 @@
+{{ define "build_self_define_tree" }}
+layui.config({base: '/public/layui_exts/mouseRightMenu/'})
+layui.use(['mouseRightMenu', 'element', 'layer', 'jquery', 'tree', 'util'], function(){
+    var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
+
+    var $ = layui.$
+    ,tree = layui.tree
+    ,layer=layui.layer
+    ,util = layui.util
+    ,index = 100;
+
+        tree.render({
+            elem: '#self-define-view'
+            ,data: role_menu.get({{ .Curname }})
+            ,showLine: true
+            ,customOperate: true
+            ,edit:['add', 'update', 'del']
+            ,click: function(obj, state){
+                console.log(obj);
+                var dataid = $(obj)[0]["data"];
+                console.log(dataid["id"]);
+                if (dataid["class"] == "site_demo_active") {
+                    active.onClick(dataid, state);
+                }
+            }
+            ,operate: function(obj){
+                var type = obj.type;
+                var data = obj.data;
+                var elem = obj.elem;
+                var deptId = data.id;
+                var parentId = data.parentId;
+
+                if (type === 'add') {
+                    layer.open({
+                        type: 2 // iframe
+                        ,title: '添加视图'
+                        ,area: ['483px', '200px']
+                        ,shade: 0
+                        ,maxmin: true
+                        ,offset: [
+                        0.5 * ($(window).height())
+                        ,0.5*($(window).width() -390)
+                        ]
+                        ,content: '//layer.layui.com/test/settop.html'
+                        ,btn: ['保存', '取消']
+                        ,yes: function(){
+                            ;
+                        }
+                        ,zIndex: layer.zIndex
+                        ,success: function(layero){
+                            layer.setTop(layero);
+                        }
+                    });
+                }
+            }
+            ,rightClick: function(event, obj){
+                active.onRightClick(obj);
+            }
+        })
+})
+{{ end }}
+
 {{ define "build_tree" }}
 layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
     
@@ -51,6 +113,22 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
    });
 
     var active = {
+        onRightClick: function(ele) {
+            var data = {content:ele.text()}
+            var menu_data=[
+                {'data':data,'type':1,'title':'右键操作1'},
+                {'data':data,'type':2,'title':'右键操作2'},
+                {'data':data,'type':3,'title':'右键操作3'},
+                {'data':data,'type':4,'title':'右键操作4'},
+                
+            ]
+            mouseRightMenu.open(menu_data,false,function(d){
+                layer.alert(JSON.stringify(d));
+            })
+            return false;
+        },
+
+        
         onClick: function (dataid, state) {
             console.log("site_demo_active on clicked");
             console.log(dataid)
