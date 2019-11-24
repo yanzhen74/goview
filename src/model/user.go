@@ -14,6 +14,7 @@ type User struct {
 	Id         int64     `xorm:"pk autoincr INT(10) notnull" json:"id" form:"id"`
 	Username   string    `xorm:"notnull" json:"username" form:"username"`
 	Password   string    `xorm:"notnull" json:"password" form:"password"`
+	Role       string    `xorm:"notnull" json:"role" form:"role"`
 	Gender     string    `xorm:"notnull" json:"gender" form:"gender"`
 	Enable     bool      `xorm:"notnull tinyint(1)" json:"enable" form:"enable"`
 	Name       string    `xorm:"notnull" json:"name" form:"name"`

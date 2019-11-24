@@ -19,5 +19,9 @@
     "go.coverOnSave": false,
     "go.formatOnSave": true,
     "go.formatTool": "goreturns",
-    "go.gocodeAutoBuild": true
+    "go.gocodeAutoBuild": true,
+    "go.useLanguageServer": true,
+    "go.alternateTools": {
+        "go-langserver": "gopls"
+    }
 }

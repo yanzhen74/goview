@@ -43,7 +43,6 @@ func Registe(ctx iris.Context) {
 	user.Enable = true
 	user.CreateTime = time.Now()
 	effect, err = model.CreateUser(user)
-	effect, err = model.CreateUser(user)
 	if effect <= 0 || err != nil {
 		ctx.Application().Logger().Errorf("用户[%s]注册失败。%s", user.Username, err.Error())
 		goto FAIL

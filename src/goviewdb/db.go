@@ -1,7 +1,6 @@
 package goviewdb
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/yanzhen74/goview/src/inits/parse"
@@ -78,22 +77,22 @@ EXIST:
 	return slaveEngine
 }
 
-func createEngine(dbIndo parse.DBConfigInfo, isMaster bool) {
-	engine, err := xorm.NewEngine(dbIndo.Dialect, GetConnURL(&dbIndo))
+func createEngine(dbInfo parse.DBConfigInfo, isMaster bool) {
+	engine, err := xorm.NewEngine(dbInfo.Dialect, GetConnURL(isMaster))
 	if err != nil {
 		golog.Fatalf("@@@ 初始化数据库连接失败!! %s", err)
 		return
 	}
 	//settings(engine, &dbIndo)
 
-	engine.ShowSQL(dbIndo.ShowSql)
+	engine.ShowSQL(dbInfo.ShowSql)
 	engine.SetMapper(core.GonicMapper{})
 	engine.SetTZLocation(utils.SysTimeLocation)
-	if dbIndo.MaxIdleConns > 0 {
-		engine.SetMaxIdleConns(dbIndo.MaxIdleConns)
+	if dbInfo.MaxIdleConns > 0 {
+		engine.SetMaxIdleConns(dbInfo.MaxIdleConns)
 	}
-	if dbIndo.MaxOpenConns > 0 {
-		engine.SetMaxOpenConns(dbIndo.MaxOpenConns)
+	if dbInfo.MaxOpenConns > 0 {
+		engine.SetMaxOpenConns(dbInfo.MaxOpenConns)
 	}
 	// 性能优化的时候才考虑，加上本机的SQL缓存
 	//cacher := xorm.NewLRUCacher(xorm.NewMemoryStore(), 1000)
@@ -109,15 +108,19 @@ func createEngine(dbIndo parse.DBConfigInfo, isMaster bool) {
 
 // 获取数据库连接的url
 // true：master主库
-func GetConnURL(info *parse.DBConfigInfo) (url string) {
+func GetConnURL(isMaster bool) (url string) {
+	url = "user_master.db"
+	if !isMaster {
+		url = "user_slave.db"
+	}
 	//db, err := gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
-	url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s",
-		info.User,
-		info.Password,
-		info.Host,
-		info.Port,
-		info.Database,
-		info.Charset)
+	// url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s",
+	// 	info.User,
+	// 	info.Password,
+	// 	info.Host,
+	// 	info.Port,
+	// 	info.Database,
+	// 	info.Charset)
 	//golog.Infof("@@@ DB conn==>> %s", url)
 	return
 }

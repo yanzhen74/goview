@@ -157,7 +157,7 @@ func (m *Jwts) CheckJWT(ctx iris_context.Context) error {
 	// Use the specified token extractor to extract a token from the request
 	token, err := m.Config.Extractor(ctx)
 	// If an error occurs, call the error handler and return an error
-	if err != nil {
+	if err != nil && token != "" {
 		m.logf("Error extracting JWT: %v", err)
 		m.Config.ErrorHandler(ctx, supports.TokenExactFailur)
 		return fmt.Errorf("Error extracting token: %v", err)
@@ -223,7 +223,27 @@ func (m *Jwts) CheckJWT(ctx iris_context.Context) error {
 	// user property in context.
 	ctx.Values().Set(m.Config.ContextKey, parsedToken)
 
+	GetJWTClaims(ctx)
+
 	return nil
+}
+
+func GetJWTClaims(ctx iris.Context) jwt.MapClaims {
+
+	myToken := (ctx.Values().Get(jwts.Config.ContextKey)).(*jwt.Token)
+	claims := myToken.Claims.(jwt.MapClaims)
+	log.Printf("current user is %v, role is %v\r\n", claims["username"], claims["role"])
+	return claims
+}
+
+type Claims struct {
+	Id       int64  `json:"id"`
+	Username string `json:"username"`
+	Role     string `json:"role"`
+	Enable   bool   `json:"enable"`
+	//Password string `json:"password"`
+	//User models.User `json:"user"`
+	jwt.StandardClaims
 }
 
 func LoginAsGuest(ctx iris_context.Context) {
@@ -235,6 +255,7 @@ func LoginAsGuest(ctx iris_context.Context) {
 
 	mUser.Id = -1
 	mUser.Username = "GUEST"
+	mUser.Role = "GUEST"
 	mUser.Enable = true
 	mUser.Name = "GUEST"
 
@@ -304,15 +325,6 @@ func ConfigJWT() {
 	//return &Jwts{Config: c}
 }
 
-type Claims struct {
-	Id       int64  `json:"id"`
-	Username string `json:"username"`
-	Enable   bool   `json:"enable"`
-	//Password string `json:"password"`
-	//User models.User `json:"user"`
-	jwt.StandardClaims
-}
-
 // 在登录成功的时候生成token
 func GenerateToken(user *model.User) (string, error) {
 	//expireTime := time.Now().Add(60 * time.Second)
@@ -321,6 +333,7 @@ func GenerateToken(user *model.User) (string, error) {
 	claims := Claims{
 		user.Id,
 		user.Username,
+		user.Role,
 		user.Enable,
 		//user.Password,
 		jwt.StandardClaims{

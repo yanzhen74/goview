@@ -38,7 +38,7 @@ func Init_pages(dir string) (data View_page_tree, err error) {
 
 	// 获取目录包含的子目录和文件信息
 	subInfos, err := ioutil.ReadDir(dir)
-	if err != nil || len(subInfos) == 0 {
+	if err != nil {
 		fmt.Println(subInfos)
 		return data, err
 	}
@@ -49,6 +49,10 @@ func Init_pages(dir string) (data View_page_tree, err error) {
 	data.Isleaf = false
 	data.Id = fmt.Sprintf("%d", page_id)
 	page_id += 1
+
+	if len(subInfos) == 0 {
+		return data, err
+	}
 
 	// 子目录及文件信息
 	for _, v := range subInfos {
@@ -61,6 +65,9 @@ func Init_pages(dir string) (data View_page_tree, err error) {
 				data.Branches = append(data.Branches, subDir)
 			}
 		} else {
+			if v.Name()[:1] == "." {
+				continue
+			}
 			f := View_page_tree{}
 			f.Curdir = dir + "/" + v.Name()
 			f.Curname = v.Name()

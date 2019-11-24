@@ -20,6 +20,7 @@ func Hub(app *iris.Application) {
 	UserHub(main)
 	TabHub(main)
 	WebsocketHub(main)
+	UserTreeHub(main)
 }
 
 func corsSetting(app *iris.Application) (main iris.Party) {

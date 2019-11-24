@@ -1,7 +1,6 @@
-{{ define "build_self_define_tree" }}
-layui.config({base: '/public/layui_exts/mouseRightMenu/'})
-layui.use(['mouseRightMenu', 'element', 'layer', 'jquery', 'tree', 'util'], function(){
-    var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
+{{ define "build_tree" }}
+layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
+    // var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
 
     var $ = layui.$
     ,tree = layui.tree
@@ -9,6 +8,60 @@ layui.use(['mouseRightMenu', 'element', 'layer', 'jquery', 'tree', 'util'], func
     ,util = layui.util
     ,index = 100;
 
+    function setHeader(xhr) {
+        token = window.localStorage.getItem('token');
+        console.log("token is %s", token);
+        if (token){
+            xhr.setRequestHeader("Authorization", "Bearer " + token);
+        }
+    }
+
+    function operateTree(obj) {
+        var type = obj.type;
+        var data = obj.data;
+        var elem = obj.elem;
+        var deptId = data.id;
+        var parentId = data.parentId;
+
+        if (type === 'add') {
+            $.ajax({
+                type: "GET", 
+                url: "/usertree/add",
+                contentType: "application/json",
+                beforeSend: setHeader,
+                success: function(data){
+                    layer.open({
+                        type: 2 // iframe
+                        ,title: '添加视图'
+                        ,area: ['800px' ,'auto']
+                        ,shade: 0
+                        ,fixed: false
+                        ,maxmin: true
+                        ,offset: 'auto'
+                        ,content: data
+                        ,beforesend:  setHeader
+                        //,zIndex: layer.zIndex
+                        ,success: function(layero, index){
+                            layer.setTop(layero);
+                        }
+                    });
+                }
+            });
+        } else if (type === 'update'){
+            ;
+        } else if (type === 'del') {
+            console.log(data['id']);
+            if (data['title'] === 'guest') {
+                return false;
+            }
+            // datatree = role_menu.get({{ .Curname }});
+            role_menu.set({{ .Curname }}, ["bake"])
+            ptree();
+        }
+        
+    }
+
+    ptree=function(){
         tree.render({
             elem: '#self-define-view'
             ,data: role_menu.get({{ .Curname }})
@@ -23,51 +76,14 @@ layui.use(['mouseRightMenu', 'element', 'layer', 'jquery', 'tree', 'util'], func
                     active.onClick(dataid, state);
                 }
             }
-            ,operate: function(obj){
-                var type = obj.type;
-                var data = obj.data;
-                var elem = obj.elem;
-                var deptId = data.id;
-                var parentId = data.parentId;
+            ,operate: operateTree
+            //,rightClick: function(event, obj){
+            //    active.onRightClick(obj);
+            //}
+        });
+    };
 
-                if (type === 'add') {
-                    layer.open({
-                        type: 2 // iframe
-                        ,title: '添加视图'
-                        ,area: ['483px', '200px']
-                        ,shade: 0
-                        ,maxmin: true
-                        ,offset: [
-                        0.5 * ($(window).height())
-                        ,0.5*($(window).width() -390)
-                        ]
-                        ,content: '//layer.layui.com/test/settop.html'
-                        ,btn: ['保存', '取消']
-                        ,yes: function(){
-                            ;
-                        }
-                        ,zIndex: layer.zIndex
-                        ,success: function(layero){
-                            layer.setTop(layero);
-                        }
-                    });
-                }
-            }
-            ,rightClick: function(event, obj){
-                active.onRightClick(obj);
-            }
-        })
-})
-{{ end }}
-
-{{ define "build_tree" }}
-layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
-    
-    var $ = layui.$
-    ,tree = layui.tree
-    ,layer = layui.layer
-    ,util = layui.util
-    ,index = 100;
+    ptree();
     
     {{ range .Branches }}   
         tree.render({
