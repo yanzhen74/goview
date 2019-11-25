@@ -109,9 +109,9 @@ func createEngine(dbInfo parse.DBConfigInfo, isMaster bool) {
 // 获取数据库连接的url
 // true：master主库
 func GetConnURL(isMaster bool) (url string) {
-	url = "user_master.db"
+	url = "./db/user_master.db"
 	if !isMaster {
-		url = "user_slave.db"
+		url = "./db/user_slave.db"
 	}
 	//db, err := gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
 	// url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s",

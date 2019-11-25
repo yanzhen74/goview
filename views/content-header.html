@@ -17,7 +17,7 @@
                             xhrFields: {
                                 withCredentials: true
                             },
-                            url : window.location.href,
+                            url : "/user/login",
                             complete: function( xhr,data ){
                                 // 获取相关Http Response header
                                 var authorization = xhr.getResponseHeader("Authorization");
@@ -56,6 +56,21 @@
                                 if (token){
                                     xhr.setRequestHeader("Authorization", "Bearer " + token);
                                 }
+                            },
+                            complete: function( xhr,data ){
+                                // 将返回一个GUEST的授权
+                                // 获取相关Http Response header
+                                var authorization = xhr.getResponseHeader("Authorization");
+                                // 在这里，做想做的事。。。
+                                console.log(authorization);
+                                var items = authorization.split(" ")
+                                // items[1] is token
+                                window.localStorage.setItem('token', items[1]);
+                                window.localStorage.setItem('username', 'GUEST');
+                                window.localStorage.setItem('rolename', 'GUEST');
+                                var headers = xhr.getAllResponseHeaders();//返回全部头信息,string
+                                console.log(headers)
+                                bearer_token = "Bearer " + items[1];
                             }
                         });
                     };

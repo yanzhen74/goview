@@ -5,6 +5,7 @@ import (
 	"github.com/yanzhen74/goview/src/controller"
 	"github.com/yanzhen74/goview/src/goviewdb"
 	"github.com/yanzhen74/goview/src/inits/parse"
+	"github.com/yanzhen74/goview/src/model"
 	"github.com/yanzhen74/goview/src/routes"
 )
 
@@ -14,6 +15,11 @@ func main() {
 	goviewdb.GwgDb = goviewdb.NewGWGDb("./db/gwg.db")
 
 	parse.AppConfigParse()
+
+	parse.DBSettingParse()
+	goviewdb.MasterEngine().Sync2(new(model.User))
+	goviewdb.SlaveEngine().Sync2(new(model.User))
+
 	routes.Hub(app)
 
 	app.HandleDir("/public", "./public")

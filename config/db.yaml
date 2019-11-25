@@ -1,5 +1,5 @@
 
-master:
+Master:
   dialect: sqlite3
   user: root
   password: root
@@ -11,7 +11,7 @@ master:
   logLevel: debug
   maxOpenConns: 100 # 最大打开连接数
   maxIdleConns: 10 # 连接池的空闲数大小
-slave:
+Slave:
   dialect: sqlite3
   user: root
   password: root

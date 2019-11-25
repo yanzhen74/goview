@@ -1,6 +1,8 @@
 package supports
 
 import (
+	// "middleware/jwts"
+
 	"github.com/kataras/iris"
 )
 
@@ -55,6 +57,9 @@ func Ok_(ctx iris.Context, msg string) {
 
 func Ok(ctx iris.Context, msg string, data interface{}) {
 	ctx.StatusCode(iris.StatusOK)
+	ctx.Header("Access-Control-Expose-Headers", "Authorization")
+	// token, _ := jwts.Config.Extractor(ctx)
+	// ctx.Header("Authorization", "bearer "+token) // for response for next time
 	ctx.JSON(iris.Map{
 		CODE: iris.StatusOK,
 		MSG:  msg,

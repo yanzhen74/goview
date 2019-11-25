@@ -63,7 +63,11 @@ func Serve(ctx iris_context.Context) bool {
 		//supports.Unauthorized(ctx, supports.Token_failur, nil)
 		//ctx.StopExecution()
 		golog.Errorf("Check jwt error, %s", err)
-		return false
+		LoginAsGuest(ctx)
+		token, _ := jwts.Config.Extractor(ctx)
+		parsedToken, _ := jwt.Parse(token, jwts.Config.ValidationKeyGetter)
+		ctx.Values().Set(jwts.Config.ContextKey, parsedToken)
+		return true
 	}
 	return true
 	// If everything ok then call next.
@@ -189,7 +193,7 @@ func (m *Jwts) CheckJWT(ctx iris_context.Context) error {
 	// Check if there was an error in parsing...
 	if err != nil {
 		m.logf("Error parsing token1: %v", err)
-		m.Config.ErrorHandler(ctx, supports.TokenExpire)
+		// m.Config.ErrorHandler(ctx, supports.TokenExpire)
 		return fmt.Errorf("Error parsing token2: %v", err)
 	}
 
@@ -198,14 +202,14 @@ func (m *Jwts) CheckJWT(ctx iris_context.Context) error {
 			m.Config.SigningMethod.Alg(),
 			parsedToken.Header["alg"])
 		m.logf("Error validating token algorithm: %s", message)
-		m.Config.ErrorHandler(ctx, supports.TokenParseFailur) // 算法错误
+		// m.Config.ErrorHandler(ctx, supports.TokenParseFailur) // 算法错误
 		return fmt.Errorf("Error validating token algorithm: %s", message)
 	}
 
 	// Check if the parsed token is valid...
 	if !parsedToken.Valid {
 		m.logf(supports.TokenParseFailurAndInvalid)
-		m.Config.ErrorHandler(ctx, supports.TokenParseFailurAndInvalid)
+		// m.Config.ErrorHandler(ctx, supports.TokenParseFailurAndInvalid)
 		return fmt.Errorf(supports.TokenParseFailurAndInvalid)
 	}
 
