@@ -1,4 +1,4 @@
-{{ define "build_tree" }}
+{{ define "build_role_tree" }}
 layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
     // var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
 
@@ -84,9 +84,21 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
     };
 
     ptree();
+})
+{{ end }}
     
+{{ define "build_tree" }}
+layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
+    // var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
+
+    var $ = layui.$
+    ,tree = layui.tree
+    ,layer=layui.layer
+    ,util = layui.util
+    ,index = 100;
+
     {{ range .Branches }}   
-        tree.render({
+    tree.render({
         elem: '#{{ .Curname }}'
         ,data: menu.get({{ .Curname }})
         //,expandClick: false
@@ -113,20 +125,20 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
         ,dragend: function(state, obj, target){
             console.log(state, obj, target);
         }
-        });
+    });
     {{ end }}
      
     var element = layui.element;
 
     // 配置tab实践在下面无法获取到菜单元素
     $(".site_demo_active").on('click', function () {
-    //$("body").on('click', ".site-demo-active", function () {
-        var dataid = {}
-        dataid.data_title = this.getAttribute("data_title")
-        dataid.data_url = this.getAttribute("data_url")
-        dataid.data_id = this.getAttribute("data_id")
-        active.onClick(dataid, 0);
-   });
+        //$("body").on('click', ".site-demo-active", function () {
+            var dataid = {}
+            dataid.data_title = this.getAttribute("data_title")
+            dataid.data_url = this.getAttribute("data_url")
+            dataid.data_id = this.getAttribute("data_id")
+            active.onClick(dataid, 0);
+    });
 
     var active = {
         onRightClick: function(ele) {
@@ -196,5 +208,5 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
             - $(".layui-header").height() - $(".layui-tab-title").height();
         $("iframe").css("height",h+"px");
     }
-});
+})
 {{ end }}

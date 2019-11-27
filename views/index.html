@@ -27,9 +27,10 @@
     </div>
 </div>
 <script>
+    {{ template "build_tree" .menu}}
     {{ template "view_tree_data" .menu }}
     {{ template "role_view_tree_data" .role_menu }}
-    {{ template "build_tree" .role_menu}}
+    {{ template "build_role_tree" .role_menu}}
     {{ template "right-click-menu" .}}
 </script>
 <!-- <script type="text/javascript" src="/public/scripts/index.js"></script> -->
