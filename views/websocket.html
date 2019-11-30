@@ -56,6 +56,9 @@ at this example we registered the 'chat' -->
                         runWebsocket()
                     },
                     {{ .paras.File }}: function (nsConn, msg) { // "pkg" event.
+                        if (document[hiddenProperty]){
+                            return;
+                        }
                         var para;
                         var strBodys = String(msg.Body).split(';');
                         for (i=0; i< strBodys.length; i++) {
@@ -69,11 +72,13 @@ at this example we registered the 'chat' -->
 
                                 para.cells[3].innerHTML = '<div style="width:200px;word-wrap:break-word;">' + results[1] + '</div>';
                                 para.cells[4].innerHTML = results[2];
-                                para.cells[6].innerHTML = results[3];
+                                // para.cells[6].innerHTML = results[3];
                                 if (results[4] ==-1){
+                                    para.cells[6].innerHTML = '<font color="#FF0000" weight=bold>' + results[3] + '</font>';
                                     para.style.foregroundColor="pink"
                                 }
                                 else {
+                                    para.cells[6].innerHTML = '<font color="#000000" weight=normal>' + results[3] + '</font>';
                                     para.style.foregroundColor="white"
                                 }
                             
@@ -97,5 +102,24 @@ at this example we registered the 'chat' -->
     }
 
     runWebsocket();
+
+    var hiddenProperty = "hidden" in document ? 'hidden' :
+        'webkitHidden' in document ? 'webkitHidden':
+        'mozHidden' in document ? 'mozHidden':
+        null;
+    
+    console.log('hiddenProperty is ', hiddenProperty);
+
+    var visibilityChangeEvent = hiddenProperty.replace(/hidden/i, 'visibilitychange');
+    var onVisibilityChange = function(){
+        if (document[hiddenProperty]){
+            console.log('page is unvisible');
+        } else {
+            console.log("page is visible");
+        }
+    }
+
+    document.addEventListener(visibilityChangeEvent, onVisibilityChange);
+ 
 </script>
 {{end}}

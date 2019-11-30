@@ -12,16 +12,16 @@
         {{ template "content-header"}}
     </div>
 
-    <div class="layui-side layui-bg-black">
+    <div class="layui-side layui-bg-black" id="menu-side">
         {{ template "content-left" . }}
     </div>
 
     <!--tab标签-->
-    <div class="layui-tab" lay-filter="param-tab" lay-allowclose="true" style="margin-left: 200px;">
+    <div class="layui-tab" id="content-tab" lay-filter="param-tab" lay-allowclose="true" style="margin-left: 200px;">
         {{ template "content-tab" .}}
     </div>
 
-    <div class="layui-footer" style="text-align:center;">
+    <div class="layui-footer" id="footer" style="text-align:center;">
         <!-- 底部固定区域 -->
         {{ template "footer" .}}
     </div>
@@ -33,6 +33,7 @@
     {{ template "build_role_tree" .role_menu}}
     {{ template "right-click-menu" .}}
 </script>
+    {{ template "layui_side_ajust" .}}
 <!-- <script type="text/javascript" src="/public/scripts/index.js"></script> -->
 </body>
 </html>

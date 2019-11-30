@@ -70,7 +70,7 @@ func Read_para_dict(filename string) (Aircrafts, error) {
 	}
 	defer file.Close()
 	data, err := ioutil.ReadFile(filename)
-	fmt.Println(string(data))
+	//fmt.Println(string(data))
 	if err != nil {
 		fmt.Printf("error: %v", err)
 		return v, err
@@ -82,7 +82,7 @@ func Read_para_dict(filename string) (Aircrafts, error) {
 		return v, err
 	}
 
-	fmt.Println(v)
+	//fmt.Println(v)
 
 	return v, err
 }

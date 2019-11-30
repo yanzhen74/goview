@@ -65,7 +65,7 @@ func Read_view_page(filename string) (*Paras, error) {
 		// fmt.Printf("index %d is %s\n", i, v.ParaList[i].Index)
 		index += 1
 	}
-	fmt.Println(v)
+	//fmt.Println(v)
 
 	return &v, err
 }

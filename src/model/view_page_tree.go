@@ -31,7 +31,7 @@ func Init_pages(dir string) (data View_page_tree, err error) {
 		data.Curdir = dir
 		data.Curname = dirInfo.Name()
 		data.Isleaf = true
-		data.Id = string(page_id)
+		data.Id = fmt.Sprintf("%d", page_id)
 		page_id += 1
 		return data, err
 	}

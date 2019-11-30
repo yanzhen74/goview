@@ -131,13 +131,659 @@ func get_param_array_from_frame(i int, frame *model.FrameDict, msg string) (v ma
 			// zcy do this section
 			// from p to v[j]
 			// this is just for test; for example: 0 should be -1 if out of limit
-			v[j] = fmt.Sprintf(",%s,%s,%s%d,%d;", p[1], p[2], frame.Frame_type.MissionID, i, i%4-1)
+			strCode := &p[1]
+			Temp := p[2]
+			strResult := &Temp
+			strResultValue := &p[2]
+			Normal, Error := Param_Transfer(frame.ParaList[j], strCode, strResult, strResultValue)
+			v[j] = fmt.Sprintf(",0x%s,%s,%s,%d;", p[1], p[2], *strResult, Normal)
+			if Error != nil {
+				fmt.Printf("\n%s\n", Error)
+			}
 			// end ------------------------
 			j++
 		}
 	}
 
 	return v, err
+}
+
+func Param_Transfer(para model.Para, strCode *string, strResult *string, strResultValue *string) (Normal int, Error error) {
+	Error = nil
+	process_type := para.Process_type
+	if strings.ToLower(process_type) == "" {
+		*strCode = *strCode
+		*strResultValue = *strCode
+		Normal = 0
+		return Normal, Error
+	} else if strings.ToLower(process_type) == "raw" {
+		process_unit := para.Process_unit
+		process_start := para.Process_start
+		process_end := para.Process_end
+
+		if strings.ToLower(process_unit) == "byte" {
+			*strResult = *strCode
+			posStart, errstart := strconv.ParseInt(process_start, 10, 32)
+			endStart, errend := strconv.ParseInt(process_end, 10, 32)
+			length := endStart - posStart + 1
+			proCode := *strCode
+
+			if errstart != nil || errend != nil || int(length) > len(proCode) {
+				if int(length) > len(proCode) {
+					Normal = -1
+					Error = errors.New("Fatal:Limitation Break in Byte\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+				} else {
+					Normal = -1
+					Error = errors.New("Error:PosStart or EndStart Error in Byte\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+				}
+				return Normal, Error
+			}
+
+			proCode = proCode[posStart : posStart+length] // posStart从零还是从1开始？
+
+			for k := 0; k < len(para.ParaRangeList); k++ {
+				para.ParaRangeList[k].Alarm_max_equal = strings.ToLower(para.ParaRangeList[k].Alarm_max_equal)
+				para.ParaRangeList[k].Alarm_min_equal = strings.ToLower(para.ParaRangeList[k].Alarm_min_equal)
+				if strings.ToLower(para.ParaRangeList[k].Alarm_max) == strings.ToLower(para.ParaRangeList[k].Alarm_min) {
+					if strings.ToLower(para.ParaRangeList[k].Alarm_min) == strings.ToLower(proCode) {
+						if strings.ToLower(para.ParaRangeList[k].ParaRangeSpecification) != "" {
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							*strCode = *strCode
+							*strResultValue = proCode
+							Normal = 0
+							return Normal, Error
+						} else {
+							*strResult = proCode
+							*strCode = *strCode
+							*strResultValue = proCode
+							Normal = 0
+							return Normal, Error
+						}
+					}
+				} else {
+					sup, errsup := strconv.ParseInt(para.ParaRangeList[k].Alarm_max, 16, 64)
+					inf, errinf := strconv.ParseInt(para.ParaRangeList[k].Alarm_min, 16, 64)
+					value, errval := strconv.ParseInt(proCode, 16, 64)
+
+					if errsup != nil || errinf != nil || errval != nil {
+						Normal = -1
+						Error = errors.New("Error:Sup, Inf or Val Error in Bit\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+						return Normal, Error
+					}
+
+					if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+						if value >= inf && value <= sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							} else {
+								if para.Type == "int" {
+									*strResult = strconv.FormatInt(value, 10)
+								} else {
+									*strResult = proCode
+								}
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							}
+						}
+					} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+						if value >= inf && value < sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							} else {
+								if para.Type == "int" {
+									*strResult = strconv.FormatInt(value, 10)
+								} else {
+									*strResult = proCode
+								}
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							}
+						}
+					} else if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+						if value > inf && value <= sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							} else {
+								if para.Type == "int" {
+									*strResult = strconv.FormatInt(value, 10)
+								} else {
+									*strResult = proCode
+								}
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							}
+						}
+					} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+						if value > inf && value < sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							} else {
+								if para.Type == "int" {
+									*strResult = strconv.FormatInt(value, 10)
+								} else {
+									*strResult = proCode
+								}
+								*strCode = *strCode
+								*strResultValue = proCode
+								Normal = 0
+								return Normal, Error
+							}
+						}
+					}
+				}
+			}
+			*strCode = *strCode
+			*strResultValue = proCode
+		} else if strings.ToLower(process_unit) == "bit" {
+			posStart, errstart := strconv.ParseInt(process_start, 10, 32)
+			endStart, errend := strconv.ParseInt(process_end, 10, 32)
+			codeLen := len(*strCode)
+			length := endStart - posStart + 1
+			totalbinary := ""
+			if errstart != nil || errend != nil {
+				Normal = -1
+				Error = errors.New("Error:PosStart or EndStart Error in Bit\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+				return Normal, Error
+			}
+
+			for k := 0; k < codeLen; k++ {
+				segcode := *strCode
+				segcode = segcode[k : k+1]
+				intbinacode, errbina := strconv.ParseInt(segcode, 16, 32)
+				binacode := strconv.FormatInt(intbinacode, 2)
+				_0bina := "0000"
+				fmt.Print("")
+				if errbina != nil {
+					Normal = -1
+					Error = errors.New("Error:Intbinacode Error in Bit\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+					return Normal, Error
+				}
+				if len(binacode) < 4 {
+					_0bina := _0bina[0:(4 - len(binacode))]
+					binacode = _0bina + binacode
+				}
+				totalbinary = totalbinary + binacode
+			}
+			bincode := ""
+			for k := 0; k < len(totalbinary); k++ {
+				bincode = bincode + "."
+			}
+			proCode := ""
+			proCode = totalbinary[posStart : posStart+length]
+			// replaceBinacode := bincode[posStart : posStart+length]
+			// sb := bincode
+			// sb = strings.Replace(sb, replaceBinacode, proCode, 1)
+			sb := bincode[:posStart] + proCode + bincode[posStart+length:]
+			// sb = sb[0:posStart] + proCode + sb[posStart+length:len(bincode)]
+			*strResult = sb
+
+			v, errv := strconv.ParseInt(proCode, 2, 32)
+			if errv != nil {
+				Normal = -1
+				Error = errors.New("Error:V Error in Bit\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+				return Normal, Error
+			}
+
+			for k := 0; k < len(para.ParaRangeList); k++ {
+				para.ParaRangeList[k].Alarm_max_equal = strings.ToLower(para.ParaRangeList[k].Alarm_max_equal)
+				para.ParaRangeList[k].Alarm_min_equal = strings.ToLower(para.ParaRangeList[k].Alarm_min_equal)
+				if strings.ToLower(para.ParaRangeList[k].Alarm_max) == strings.ToLower(para.ParaRangeList[k].Alarm_min) {
+					if strings.ToLower(para.ParaRangeList[k].Alarm_min) == strings.ToLower(proCode) {
+						if strings.ToLower(para.ParaRangeList[k].ParaRangeSpecification) != "" {
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							*strCode = *strCode
+							if strings.ToLower(para.Type) == "int" {
+								*strResultValue = strconv.FormatInt(v, 10)
+							} else {
+								*strResultValue = sb
+							}
+						} else {
+							if strings.ToLower(para.Type) == "int" {
+								*strResult = strconv.FormatInt(v, 10)
+							} else {
+								*strResult = sb
+							}
+							*strCode = *strCode
+							if strings.ToLower(para.Type) == "int" {
+								*strResultValue = strconv.FormatInt(v, 10)
+							} else {
+								*strResultValue = sb
+							}
+						}
+						Normal = 0
+						return Normal, Error
+					}
+				} else {
+					sup, errsup := strconv.ParseInt(para.ParaRangeList[k].Alarm_max, 10, 64)
+					inf, errinf := strconv.ParseInt(para.ParaRangeList[k].Alarm_min, 10, 64)
+					value, errval := strconv.ParseInt(proCode, 2, 32)
+
+					if errsup != nil || errinf != nil || errval != nil {
+						Normal = -1
+						Error = errors.New("Error:Sup, Inf or Value Error in Bit\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+						return Normal, Error
+					}
+
+					if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+						if value >= inf && value <= sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							} else {
+								if strings.ToLower(para.Type) == "int" {
+									*strResult = strconv.FormatInt(v, 10)
+								} else {
+									*strResult = sb
+								}
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							}
+							Normal = 0
+							return Normal, Error
+						}
+					} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+						if value >= inf && value < sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							} else {
+								if strings.ToLower(para.Type) == "int" {
+									*strResult = strconv.FormatInt(v, 10)
+								} else {
+									*strResult = sb
+								}
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							}
+							Normal = 0
+							return Normal, Error
+						}
+					} else if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+						if value > inf && value <= sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							} else {
+								if strings.ToLower(para.Type) == "int" {
+									*strResult = strconv.FormatInt(v, 10)
+								} else {
+									*strResult = sb
+								}
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							}
+							Normal = 0
+							return Normal, Error
+						}
+					} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+						if value > inf && value < sup {
+							if para.ParaRangeList[k].ParaRangeSpecification != "" {
+								*strResult = para.ParaRangeList[k].ParaRangeSpecification
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							} else {
+								if strings.ToLower(para.Type) == "int" {
+									*strResult = strconv.FormatInt(v, 10)
+								} else {
+									*strResult = sb
+								}
+								*strCode = *strCode
+								if strings.ToLower(para.Type) == "int" {
+									*strResultValue = strconv.FormatInt(v, 10)
+								} else {
+									*strResultValue = sb
+								}
+							}
+							Normal = 0
+							return Normal, Error
+						}
+					}
+				}
+			}
+			*strCode = strings.Replace(*strCode, "0x", "", -1)
+			*strCode = *strCode
+			*strResultValue = sb
+		}
+		if strings.ToLower(process_unit) == "code" {
+			*strResult = *strCode
+			for k := 0; k < len(para.ParaRangeList); k++ {
+				posStart, errstrat := strconv.ParseInt(process_start, 10, 32)
+				endStart, errend := strconv.ParseInt(process_end, 10, 32)
+				length := endStart - posStart + 1
+				proCode := *strCode
+				proCode = proCode[posStart : posStart+length] // posStart从零还是从1开始？
+
+				if errstrat != nil || errend != nil {
+					Normal = -1
+					Error = errors.New("Error:PosStrat or EndStart Error in Code\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+					return Normal, Error
+				}
+				if strings.ToLower(proCode) == strings.ToLower(para.ParaRangeList[k].Alarm_max) && strings.ToLower(proCode) == strings.ToLower(para.ParaRangeList[k].Alarm_min) {
+					if strings.ToLower(para.ParaRangeList[k].ParaRangeSpecification) != "" {
+						*strResult = para.ParaRangeList[k].ParaRangeSpecification
+						*strCode = *strCode
+						*strResultValue = proCode
+						Normal = 0
+						return Normal, Error
+					} else {
+						*strResult = proCode
+						*strCode = *strCode
+						*strResultValue = proCode
+						Normal = 0
+						return Normal, Error
+					}
+				}
+				*strResultValue = proCode
+			}
+		}
+		if strings.ToLower(process_unit) == "longcode" {
+			*strResult = *strCode
+			for k := 0; k < len(para.ParaRangeList); k++ {
+				posStart, errstrat := strconv.ParseInt(process_start, 10, 32)
+				endStart, errend := strconv.ParseInt(process_end, 10, 32)
+				length := endStart - posStart + 1
+				proCode := *strCode
+				proCode = proCode[posStart : posStart+length] // posStart从零还是从1开始？
+
+				if errstrat != nil || errend != nil {
+					Normal = -1
+					Error = errors.New("Error:PosStart or EndStart Error in LongCode\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+					return Normal, Error
+				}
+
+				if strings.ToLower(para.ParaRangeList[k].ParaRangeSpecification) != "" {
+					*strResult = para.ParaRangeList[k].ParaRangeSpecification
+					*strCode = *strCode
+					*strResultValue = proCode
+					Normal = 0
+					return Normal, Error
+				} else {
+					*strResult = proCode
+					*strCode = *strCode
+					*strResultValue = proCode
+					Normal = 0
+					return Normal, Error
+				}
+				*strResultValue = proCode
+			}
+		}
+	} else if strings.ToLower(process_type) == "result" {
+		Type := para.Type
+		if strings.ToLower(Type) == "int" {
+			*strCode = *strCode
+			for k := 0; k < len(para.ParaRangeList); k++ {
+				para.ParaRangeList[k].Alarm_max_equal = strings.ToLower(para.ParaRangeList[k].Alarm_max_equal)
+				para.ParaRangeList[k].Alarm_min_equal = strings.ToLower(para.ParaRangeList[k].Alarm_min_equal)
+				sup, errsup := strconv.ParseInt(para.ParaRangeList[k].Alarm_max, 10, 64)
+				inf, errinf := strconv.ParseInt(para.ParaRangeList[k].Alarm_min, 10, 64)
+				value, errval := strconv.ParseInt(*strCode, 16, 64)
+
+				if errsup != nil || errinf != nil || errval != nil {
+					Normal = -1
+					Error = errors.New("Error:Sup, Inf or Val Error in Int\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+					return Normal, Error
+				}
+				if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+					if value >= inf && value <= sup {
+						if para.ParaRangeList[k].ParaRangeSpecification != "" {
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							*strResultValue = strconv.FormatInt(value, 10)
+						} else {
+							*strResultValue = strconv.FormatInt(value, 10)
+						}
+						Normal = 0
+						return Normal, Error
+					}
+				} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+					if value >= inf && value < sup {
+						if para.ParaRangeList[k].ParaRangeSpecification != "" {
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							*strResultValue = strconv.FormatInt(value, 10)
+						} else {
+							*strResultValue = strconv.FormatInt(value, 10)
+						}
+						Normal = 0
+						return Normal, Error
+					}
+				} else if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+					if value > inf && value <= sup {
+						if para.ParaRangeList[k].ParaRangeSpecification != "" {
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							*strResultValue = strconv.FormatInt(value, 10)
+						} else {
+							*strResultValue = strconv.FormatInt(value, 10)
+						}
+						Normal = 0
+						return Normal, Error
+					}
+				} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+					if value > inf && value < sup {
+						if para.ParaRangeList[k].ParaRangeSpecification != "" {
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							*strResultValue = strconv.FormatInt(value, 10)
+						} else {
+							*strResultValue = strconv.FormatInt(value, 10)
+						}
+						Normal = 0
+						return Normal, Error
+					}
+				} else {
+					*strResultValue = strconv.FormatInt(value, 10)
+					Normal = -1
+					Error = errors.New("Fatal:Limitation Break\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+					return Normal, Error
+				}
+				*strResultValue = strconv.FormatInt(value, 10)
+			}
+		} else if strings.ToLower(Type) == "float" {
+			*strCode = *strCode
+			l := 0
+			for k := 0; k < len(para.ParaRangeList); k++ {
+				value, errval := strconv.ParseFloat(*strResult, 64)
+				if errval != nil {
+					*strResultValue = *strResult
+					Normal = -1
+					Error = errors.New("Error:Value Error in Float\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+					return Normal, Error
+				}
+
+				if para.ParaRangeList[k].Alarm_max == "limitation" && para.ParaRangeList[k].Alarm_min != "limitation" {
+					inf, errinf := strconv.ParseFloat(para.ParaRangeList[k].Alarm_min, 64)
+
+					if errinf != nil {
+						Normal = -1
+						Error = errors.New("Error:Inf Error in Float\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+						return Normal, Error
+					}
+
+					if strings.ToLower(para.ParaRangeList[k].Alarm_min_equal) == "true" {
+						if value >= inf {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					} else if strings.ToLower(para.ParaRangeList[k].Alarm_min_equal) == "false" {
+						if value > inf {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					}
+				} else if para.ParaRangeList[k].Alarm_max != "limitation" && para.ParaRangeList[k].Alarm_min == "limitation" {
+					sup, errsup := strconv.ParseFloat(para.ParaRangeList[k].Alarm_max, 64)
+
+					if errsup != nil {
+						Normal = -1
+						Error = errors.New("Error:Sup Error in Float\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+						return Normal, Error
+					}
+
+					if strings.ToLower(para.ParaRangeList[k].Alarm_min_equal) == "true" {
+						if value <= sup {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					} else if strings.ToLower(para.ParaRangeList[k].Alarm_min_equal) == "false" {
+						if value < sup {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					}
+				} else if strings.ToLower(para.ParaRangeList[k].Alarm_max) != "limitation" && strings.ToLower(para.ParaRangeList[k].Alarm_min) != "limitation" {
+					sup, errsup := strconv.ParseFloat(para.ParaRangeList[k].Alarm_max, 32)
+					inf, errinf := strconv.ParseFloat(para.ParaRangeList[k].Alarm_min, 32)
+
+					if errsup != nil || errinf != nil {
+						Normal = -1
+						Error = errors.New("Error:Sup or Inf Error in Float\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+						return Normal, Error
+					}
+					para.ParaRangeList[k].Alarm_max_equal = strings.ToLower(para.ParaRangeList[k].Alarm_max_equal)
+					para.ParaRangeList[k].Alarm_min_equal = strings.ToLower(para.ParaRangeList[k].Alarm_min_equal)
+
+					if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+						if value >= inf && value <= sup {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "true" {
+						if value >= inf && value < sup {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					} else if para.ParaRangeList[k].Alarm_max_equal == "true" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+						if value > inf && value <= sup {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+						}
+						l++
+					} else if para.ParaRangeList[k].Alarm_max_equal == "false" && para.ParaRangeList[k].Alarm_min_equal == "false" {
+						if value > inf && value < sup {
+							*strResultValue = *strResult
+							*strResult = para.ParaRangeList[k].ParaRangeSpecification
+							if *strResult == "" {
+								*strResult = *strResultValue
+							}
+							Normal = 0
+							return Normal, Error
+
+						}
+						l++
+					} else {
+						*strResultValue = strconv.FormatFloat(value, 'f', -1, 64)
+						Normal = -1
+						Error = errors.New("Fatal:Limitation Break\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+						return Normal, Error
+					}
+				}
+			}
+			if l > 0 {
+				*strResultValue = *strResult
+				Normal = -1
+				Error = errors.New("Fatal:Limitation Break\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+				return Normal, Error
+			} else {
+				*strResultValue = *strResult
+				Normal = 0
+				return Normal, Error
+			}
+		}
+	}
+	Normal = -1
+	Error = errors.New("Fatal:Limitation Break\nPara Name:" + para.Name + "\nParaValue:" + *strResultValue + "\n")
+	return Normal, Error
 }
 
 // return 0: not changed; 1: new regist; -1: unregist
@@ -162,7 +808,7 @@ func regist_view_chan(frame *model.FrameDict, info *model.View_page_regist_info,
 			for _, p := range (*view_dict).ParaList {
 				if p.ParaKey == item.ParaKey {
 					(para_view_map[info.Conn])[index] = p.Index
-					log.Printf("bound %s\n", p.Index)
+					// log.Printf("bound %s\n", p.Index)
 				}
 			}
 		}

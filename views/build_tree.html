@@ -198,6 +198,12 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
         tabChange: function (id) {
             //切换到指定Tab项
             element.tabChange('param-tab', id); //根据传入的id传入到指定的tab项
+            element.onmouseup = function(){
+            ajust_width.onMouseUp(this);
+        };
+            element.onmousemove = function(){
+            ajust_width.onMouseMove(this);
+        };
         },
         tabDelete: function (id) {
             element.tabDelete("param-tab", id);//删除

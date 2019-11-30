@@ -1,0 +1,76 @@
+{{ define "layui_side_ajust" }}
+<script type="text/javascript">
+layui.use(['jquery'], function(){
+
+    var $ = layui.$
+    var tTDSide;
+    var Controls = new Array(2);
+    var eSide=document.getElementById("menu-side"); //侧边栏
+    var eTab=document.getElementById("content-tab"); // 表格区
+    Controls[0] = eSide;
+    Controls[1] = eTab;
+    Controls[2]= document.getElementById("footer");
+    Controls[3] = document;
+
+    Controls[0].onmousedown = function (){
+        tTDSide = this;
+        if (event.offsetX > tTDSide.offsetWidth - 10) {
+            tTDSide.mouseDown = true;
+            tTDSide.oldX =  event.x;
+            tTDSide.oldWidth = tTDSide.offsetWidth;
+        }
+    };
+
+    for (j=0; j<4; j++){
+
+        Controls[j].onmouseup = function(){
+            ajust_width.onMouseUp(this);
+        };
+        Controls[j].onmousemove = function() {
+            ajust_width.onMouseMove(this, j<3);
+        };
+    }
+
+    var ajust_width = {
+        onMouseUp: function(element){
+            if (tTDSide == undefined) return;
+            // end ajust
+            tTDSide.mouseDown = false;
+            tTDSide.style.cursor = 'default';
+        },
+        onMouseMove: function (element, hasStyle){
+            if (hasStyle){
+                if (event.offsetX > eSide.offsetWidth - 10 )
+                    element.style.cursor = 'col-resize';
+                else
+                    element.style.cursor = 'default';
+            }
+
+            // change model
+            if (tTDSide == undefined) return;
+
+            // adjust width
+            if (tTDSide.mouseDown != null && tTDSide.mouseDown == true){
+                tTDSide.style.cursor = 'default';
+                if (tTDSide.oldWidth + (event.x - tTDSide.oldX) > 0)
+                    tTDSide.width = tTDSide.oldWidth + (event.x - tTDSide.oldX);
+
+                $('.layui-side.layui-bg-black').width(tTDSide.width);
+                $('.layui-side').width(tTDSide.width);
+                $('.layui-side-scroll').width(tTDSide.width);
+                $('.layui-nav.layui-nav-tree').width(tTDSide.width);
+
+                tTDSide.style.width = tTDSide.width;
+                eTab.style.marginLeft = tTDSide.width;
+    
+                $('#content-tab').css('margin-left', tTDSide.width);
+                // $('#footer').css('margin-left', tTDSide.width);
+                console.log(tTDSide.width);
+                tTDSide.style.cursor='col-resize';
+                // ajust relative element
+            }                
+        }
+    }
+});
+</script>
+{{ end }}

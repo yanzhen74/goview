@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/kataras/iris"
 	"github.com/yanzhen74/goview/src/controller"
 	"github.com/yanzhen74/goview/src/goviewdb"
@@ -41,6 +44,7 @@ func main() {
 	// Receive network data
 	controller.Run_network()
 
+	go http.ListenAndServe(":10108", nil)
 	// app.Run(iris.Addr(":"+parse.O.Other.Port), iris.WithoutServerError(iris.ErrServerClosed))
 	app.Run(iris.Addr(":"+parse.AppConfig.Port), iris.WithConfiguration(iris.YAML("config/iris.yaml")))
 }

@@ -56,5 +56,5 @@ func DBSettingParse() {
 		golog.Fatalf("Error. %s", err)
 	}
 
-	golog.Info(DBConfig)
+	//golog.Info(DBConfig)
 }

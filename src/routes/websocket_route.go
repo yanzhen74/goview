@@ -19,7 +19,12 @@ var (
 )
 
 func regist_info(nsConn *websocket.NSConn, action int) {
+	lock.Lock()
 	info := conn_info_map[nsConn]
+	lock.Unlock()
+	if info == nil {
+		return
+	}
 	info.Set_action(action)
 	for _, i := range *(info.View_dict) {
 		for _, d := range *controller.Dicts {
@@ -66,6 +71,9 @@ var serverEvents = websocket.Namespaces{
 
 			// bind frontend view page to backend frame which contains their params
 			paras := File_paras_map[(string)(msg.Body)]
+			if paras == nil { // last time websocket connection
+				return nil
+			}
 			// add a channel between backend and frontend
 			view_chan := make(chan string, 10)
 			info := model.Get_view_page_regist_info(paras, view_chan)
@@ -93,6 +101,7 @@ var serverEvents = websocket.Namespaces{
 func WebsocketHub(party iris.Party) {
 	web := party.Party("/echo")
 
+	conn_info_map = make(map[*websocket.NSConn]*model.View_page_regist_info)
 	// create our websocket server
 	// Almost all features of neffos are disabled because no custom message can pass
 	// when app expects to accept and send only raw websocket native messages.
@@ -109,7 +118,6 @@ func WebsocketHub(party iris.Party) {
 	// 	return nil
 	// }
 
-	conn_info_map = make(map[*websocket.NSConn]*model.View_page_regist_info)
 	// ws.OnDisconnect = func(c *websocket.Conn) {
 	// 	log.Printf("[%s] Disconnected from server", c.ID())
 	// }
