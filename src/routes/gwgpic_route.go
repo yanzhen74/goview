@@ -3,7 +3,7 @@ package routes
 import (
 	"fmt"
 	"strconv"
-	"supports"
+	"github.com/yanzhen74/goview/src/supports"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/hero"

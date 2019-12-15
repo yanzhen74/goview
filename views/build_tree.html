@@ -1,5 +1,4 @@
 {{ define "build_role_tree" }}
-layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
     // var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
 
     var $ = layui.$
@@ -24,29 +23,12 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
         var parentId = data.parentId;
 
         if (type === 'add') {
-            $.ajax({
-                type: "GET", 
-                url: "/usertree/add",
-                contentType: "application/json",
-                beforeSend: setHeader,
-                success: function(data){
-                    layer.open({
-                        type: 2 // iframe
-                        ,title: '添加视图'
-                        ,area: ['800px' ,'auto']
-                        ,shade: 0
-                        ,fixed: false
-                        ,maxmin: true
-                        ,offset: 'auto'
-                        ,content: data
-                        ,beforesend:  setHeader
-                        //,zIndex: layer.zIndex
-                        ,success: function(layero, index){
-                            layer.setTop(layero);
-                        }
-                    });
-                }
-            });
+            console.log(data);
+            var dataid = {"data_url":"/usertree/add", "data_id":data['title'], "data_title": data['title']+":"+type, "class":"site_demo_active" };
+            console.log(dataid["id"]);
+            if (dataid["class"] == "site_demo_active") {
+                active.onClick(dataid, "placeholder");
+            }
         } else if (type === 'update'){
             ;
         } else if (type === 'del') {
@@ -84,12 +66,10 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
     };
 
     ptree();
-})
 {{ end }}
     
 {{ define "build_tree" }}
-layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
-    // var mouseRightMenu = layui.mouseRightMenu,layer = layui.layer,$=layui.jquery;
+    // layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){ 
 
     var $ = layui.$
     ,tree = layui.tree
@@ -214,5 +194,5 @@ layui.use(['element', 'layer', 'jquery', 'tree', 'util'], function(){
             - $(".layui-header").height() - $(".layui-tab-title").height();
         $("iframe").css("height",h+"px");
     }
-})
+//})
 {{ end }}

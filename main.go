@@ -3,13 +3,14 @@ package main
 import (
 	"net/http"
 	_ "net/http/pprof"
+	"routes"
 
 	"github.com/kataras/iris"
 	"github.com/yanzhen74/goview/src/controller"
 	"github.com/yanzhen74/goview/src/goviewdb"
 	"github.com/yanzhen74/goview/src/inits/parse"
 	"github.com/yanzhen74/goview/src/model"
-	"github.com/yanzhen74/goview/src/routes"
+	// "github.com/yanzhen74/goview/src/routes"
 )
 
 func main() {
