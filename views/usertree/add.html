@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div width="80%" left="10%">
+    <div width="90%" left="10%">
         <div class="layui-layout layui-layout-admin">
 
             <form class="add" lay-filter="addform" id="addform" style="display: inline-block;">
@@ -29,39 +29,13 @@
                 </div>
 
                 <div class="layui-layout" left="300px" height: 80%>
-                    <table id="pre_para_table" lay-filter="test"></table>
-                    <div width:%40 style="display: inline-block">
-                        <table left="400px" id="pre_para_table" class="layui-table" lay-size="sm" lay-filter="pre_para_table">
-                            <colgroup>
-                                <col width="150">
-                                <col width="200">
-                                <col>
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th lay-data="{field:'ID', width:100, unresize:false}">序号</th>
-                                    <th lay-data="{field:'ParaKey', width:100, sort:true}">参数代号</th>
-                                    <th lay-data="{field:'Name', width:200}">名称</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>a</td><td>a</td><td>a</td></tr>
-                                <tr><td>a</td><td>a</td><td>a</td></tr>
-                                <tr><td>a</td><td>a</td><td>a</td></tr>
-                                <tr><td>a</td><td>a</td><td>a</td></tr>
-                                <tr><td>a</td><td>a</td><td>a</td></tr>
-                                {{ range .paras.ParaList }}
-                                <tr id="{{.Index}}">
-                                    <td>{{ .ID }}</td>
-                                    <td>{{ .ParaKey }}</td>
-                                    <td>{{ .Name }}</td>
-                                </tr>
-                                {{ end }}
-                            </tbody>
+                    <!-- <table id="pre_para_table" lay-filter="test"></table> -->
+                    <div width:%30 style="display: inline-block">
+                        <table left="200px" id="pre_para_table" class="layui-table" lay-size="sm" lay-filter="pre_para_table">
                         </table>
                     </div>
 
-                    <div top:0% width: 20% style="display: inline-block">
+                    <div top:0% width: 10% style="display: inline-block">
                         <ul style="width:100%">
                             <li><button class="layui-btn" lay-submit="">[__添加__]</button><span /></li>
                             <br>
@@ -73,10 +47,8 @@
                         </ul>
                     </div>
 
-                    <div width: 40% right:40% style="display: inline-block">
+                    <div top:0% width: auto right:30% style="display: inline-block">
                         <table width: 100% overflow:auto solid #dddddd position="fixed" top="0" id="pro_para_table" class="layui-table" lay-size="sm" lay-filter="pro_para_table">
-
-
                         </table>
                     </div>
 
@@ -91,9 +63,9 @@
             </form>
         </div>
         <!-- foot button -->
-        <div class="layui-form-item layui-layout-admin">
+        <div class="layui-form-item" left:1024px height: 80%>
             <div class="layui-input-block">
-                <div class="layui-footer">
+                <div >
                     <button class="layui-btn" lay-submit="">创建</button><span />
                     <button class="layui-btn" onclick="formClose();">取消</button>
                 </div>
@@ -115,9 +87,14 @@
         
         var $ = layui.$;
         var search = document.getElementById("search"); 
+        var paras_list = [
+            {ID:1, ParaKey:"dkdkdk", Name:"dkddkd"}
+        ];
         search.onclick =function(){  
             let key_search = $("#key_search").val();
-            let param={'key_search': key_search};
+            let param={'key_search': key_search, 'mission_id': "XJYH",
+                "data_type": "RTM", "payLoad_name": "SGYC", 
+                "subAddress_name": "PK-CEH2"};
             $.ajax({
                 type: 'POST', // 获取头信息，type=HEAD即可
                 data: JSON.stringify(param),
@@ -130,6 +107,8 @@
                 url : "/usertree/keysearch",
                 success: function(data) {
                     console.log(data);
+                    paras_list = data.data.ParaList;
+                    pre_table.reload({data: data.data.ParaList});
                 },
                 complete: function( xhr,data ){
                 }
@@ -138,21 +117,30 @@
 
         var table=layui.table;
 
-        table.render({
-            elem: '#pro_para_table'
-            ,height: 312
+        var pre_table = table.render({
+            elem: '#pre_para_table'
+            ,height: 400
             ,page: false
-            ,data:[
-                {{ range .paras.ParaList }}
-                { {{.ID}}, {{.ParaKey}}, {{.Name}}},
-                {{ end }}
-            ]
+            ,data: paras_list
             ,cols:[[
-                {field:'id', width:100,unresize:false,title:'序号'}
+                {field:'id', width:100,unresize:false,title:'序号', type:'checkbox'}
                 ,{field:'ParaKey', width:100, sort:true,title:'参数代号'}
-                ,{field:'Name', title:"名称", width:500 }
+                ,{field:'Name', title:"名称", width:400 }
             ]]
         });
+
+        table.render({
+            elem: '#pro_para_table'
+            ,height: 400
+            ,page: false
+            ,data: paras_list
+            ,cols:[[
+                {field:'id', width:100,unresize:false,title:'序号', type:'checkbox'}
+                ,{field:'ParaKey', width:100, sort:true,title:'参数代号'}
+                ,{field:'Name', title:"名称", width:400 }
+            ]]
+        });
+
    })
 </script>
 </html>
