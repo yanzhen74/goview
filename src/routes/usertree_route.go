@@ -2,7 +2,7 @@ package routes
 
 import (
 	"fmt"
-	"model"
+	"github.com/yanzhen74/goview/src/model"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/hero"
