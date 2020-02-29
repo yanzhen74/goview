@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	_ "net/http/pprof"
-	"routes"
+	"github.com/yanzhen74/goview/src/routes"
 
 	"github.com/kataras/iris"
 	"github.com/yanzhen74/goview/src/controller"
