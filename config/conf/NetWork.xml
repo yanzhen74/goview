@@ -2,4 +2,9 @@
 <ROOT>
     <NetWork NetWorkSeqNum="1" NetWorkName="RTM" NetWorkIP="10.211.55.2:9092" NetWorkPort="STANDBY_RT" NetWorkSpecification="实时遥测" NetWorkProtocal="kafka" DataType="data"/>
     <NetWork NetWorkSeqNum="2" NetWorkName="GWG" NetWorkIP="10.211.55.2:9092" NetWorkPort="GWG_IMG" NetWorkSpecification="车载探头图像" NetWorkProtocal="kafka_gwg" DataType="data"/>
+    <NetWork NetWorkSeqNum="3" NetWorkName="ENG_INDEX" NetWorkIP="10.211.55.2:9092" NetWorkPort="CCSDS_INDEX" NetWorkSpecification="工程参数索引" NetWorkProtocal="kafka_eng_index" DataType="data"/>
+    <NetWork NetWorkSeqNum="4" NetWorkName="ENG_INDEX_1" NetWorkIP="10.211.55.2:9092" NetWorkPort="CCSDS_INDEX_1" NetWorkSpecification="工程参数一级索引" NetWorkProtocal="redis_eng_1" DataType="data"/>
+    <NetWork NetWorkSeqNum="5" NetWorkName="ENG_INDEX_2" NetWorkIP="10.211.55.2:9092" NetWorkPort="CCSDS_INDEX_2" NetWorkSpecification="工程参数二级索引" NetWorkProtocal="redis_eng_2" DataType="data"/>
+    <NetWork NetWorkSeqNum="6" NetWorkName="ENG_INDEX_3" NetWorkIP="10.211.55.2:9092" NetWorkPort="CCSDS_INDEX_3" NetWorkSpecification="工程参数三级索引" NetWorkProtocal="redis_eng_3" DataType="data"/>
+    <NetWork NetWorkSeqNum="7" NetWorkName="ENG_DATA" NetWorkIP="10.211.55.2:9092" NetWorkPort="CCSDS_DATA" NetWorkSpecification="工程参数" NetWorkProtocal="redis_eng_data" DataType="data"/>
 </ROOT>

@@ -17,6 +17,8 @@ func GetNetProcesser(netType string) *NetProcesser {
 		processer = new(NetKafka)
 	case "kafka_gwg":
 		processer = new(NetKafkaGWG)
+	case "kafka_eng":
+		processer = new(NetKafkaENG)
 	default:
 	}
 
